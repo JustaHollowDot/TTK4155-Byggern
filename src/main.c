@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 #include "uart.h"
-#include "sram.h"
+// #include "sram.h"
 #include "adc.h"
 
 #define INTERNAL_MEMORY_END 0x4FF
@@ -20,40 +20,41 @@
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
 
+void EXMEM_init() {
+    MCUCR = (1 << SRE); // Enable SRAM i ATmega162
+    SFIOR = (1 << XMM2); // Maskerer PC4-PC7 på ATmega162. Dvs passer på at vi ikke kuker med JTAG-pinnene. Sjekk "Table 4", side 32 i ATmega162-databladet.
+}
+
 int main() {
     USART_Init(MYUBRR);
     EXMEM_init();
-
-
-    volatile char *adc = (char *) 0x1400; // 0x1400 er start-adressen til ADC
+    button_init();
 
     _delay_ms(100);
 
-    DDRE &= ~(1 << PE0);
-    DDRE &= ~(1 << PE2);
+    struct Adc adc = {};
+    struct Joy_stick joy_stick = {};
+    joy_stick.adc_indexes[0] = 0;
+    joy_stick.adc_indexes[1] = 1;
 
-    printf("Klar til å måle: \n");
+    printf("Getting center position on joystick");
+    _delay_ms(500);
+
+    get_new_adc_values(adc, joy_stick);
+    set_center_voltages(joy_stick, adc);
+
+    printf("Center voltages collected, continuing");
 
     while(1) {
-        adc[0] = 1;
+        read_adc();
 
-        _delay_ms(100);
+        get_new_adc_values(adc, joy_stick);
+        set_min_max_voltages(joy_stick, adc);
+        set_joy_stick_angle(joy_stick);
 
-        printf("ADC-verdi: ");
+        printf("angle: %x \n", (int)(joy_stick.current_angle * 1000));
+        printf("test: %02x : %02x \n", joy_stick.current_voltage[0], joy_stick.current_voltage[1]);
 
-        for (int i = 0; i < 4; i++) {
-            volatile uint8_t value = adc[i]; // Leser 8-bit data fra ADC
-
-            printf("%X %02X", i, value); //Printer til seriell aka putty
-            printf(" : ");
-        }
-
-        printf("\n");
-
-        bool button_joystick = PINE & 1 << PINE2;
-        printf("Knapp: %X", button_joystick);
-        printf("\n");
-
-        _delay_ms(1000); //Bare sånn at det ikke blir helt kaos i putty
+        _delay_ms(1000);
     }
 }
