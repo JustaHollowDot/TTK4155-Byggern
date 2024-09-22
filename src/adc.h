@@ -7,24 +7,24 @@
 #include <stdbool.h>
 
 struct Adc {
-    volatile char voltages[4];
-    char min_voltage_values[4];
-    char max_voltage_values[4];
+    volatile uint8_t voltages[4];
+    uint8_t min_voltage_values[4];
+    uint8_t max_voltage_values[4];
 };
 
 struct Joy_stick {
-    unsigned int adc_indexes[2];
-    char center_voltage[2];
-    char max_voltages[2];
-    char min_voltages[2];
+    uint8_t adc_indexes[2];
+    uint8_t center_voltage[2];
+    uint8_t max_voltages[2];
+    uint8_t min_voltages[2];
 
-    char current_voltage[2];
+    uint8_t current_voltage[2];
     float current_angle;
 };
 
 struct Sliders {
-    char current_voltage[2];
-    int current_position[2];
+    uint8_t current_voltage[2];
+    uint8_t current_position[2];
 };
 
 volatile char *adc_memory_position = (char *) 0x1400; // 0x1400 er start-adressen til ADC
@@ -35,7 +35,7 @@ void get_new_adc_values(struct Adc adc, struct Joy_stick joy_stick) {
     _delay_us(100);
 
     for (int i = 0; i < 4; i++) {
-        volatile char value = adc_memory_position[i]; // Leser 8-bit data fra ADC
+        volatile uint8_t value = adc_memory_position[i]; // Leser 8-bit data fra ADC
 
         printf("%02X", value); //Printer til seriell aka putty
         printf(" : ");
@@ -90,7 +90,7 @@ void set_joy_stick_angle(struct Joy_stick joy_stick) {
         delta_y = delta_y / joy_stick.min_voltages[1];
     }
 
-    joy_stick.current_angle = (atan2(delta_x, delta_y) * 57);
+    joy_stick.current_angle = (float) (atan2(delta_x, delta_y) * 57);
 }
 
 int get_joy_stick_distance_from_center(struct Joy_stick joy_stick) {
@@ -123,6 +123,7 @@ void read_adc() {
     printf("\n");
 
     bool button_joystick = PINE & 1 << PINE2;
+
     printf("Knapp: %X", button_joystick);
     printf("\n");
 }

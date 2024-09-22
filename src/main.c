@@ -1,4 +1,3 @@
-#define F_CPU 4915200UL
 #define FOSC 4915200UL
 
 #include <avr/io.h>
