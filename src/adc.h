@@ -1,0 +1,7 @@
+#ifndef TEST_PLATFORMIO_ADC_H
+#define TEST_PLATFORMIO_ADC_H
+
+
+
+
+#endif //TEST_PLATFORMIO_ADC_H
