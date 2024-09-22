@@ -30,6 +30,8 @@ int main() {
     EXMEM_init();
     button_init();
 
+    printf("test");
+
     _delay_ms(100);
 
     struct Adc adc = {};
