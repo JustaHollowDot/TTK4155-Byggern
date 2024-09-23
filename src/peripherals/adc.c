@@ -1,7 +1,38 @@
 #include "adc.h"
 
+#define ADC_START 0x1400
+#define ADC_INDEX_0 0
+#define ADC_INDEX_1 1
+#define SLIDER_INDEX_0 2
+#define SLIDER_INDEX_1 3
 
-volatile char *adc_memory_position = (char *) 0x1400; // 0x1400 er start-adressen til ADC
+volatile char *adc_memory_position = (char *) ADC_START; // 0x1400 er start-adressen til ADC
+
+void adc_setup(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders) {
+    joy_stick->adc_indexes[0] = ADC_INDEX_0;
+    joy_stick->adc_indexes[1] = ADC_INDEX_1;
+
+    sliders->adc_indexes[0] = SLIDER_INDEX_0;
+    sliders->adc_indexes[1] = SLIDER_INDEX_1;
+
+    printf("Getting center position on joystick");
+    _delay_ms(500);
+
+    get_new_adc_values(adc);
+    set_center_voltages(joy_stick, adc);
+
+    printf("Center voltages collected, continuing");
+}
+
+void adc_update(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders) {
+
+    get_new_adc_values(adc);
+    set_joy_stick_voltages(adc, joy_stick);
+    set_slider_voltages(adc, sliders);
+
+    set_min_max_voltages(joy_stick, adc);
+    set_joy_stick_angle(joy_stick);
+}
 
 
 void get_new_adc_values(struct Adc *adc) {
@@ -10,7 +41,7 @@ void get_new_adc_values(struct Adc *adc) {
     _delay_us(100);
 
     for (int i = 0; i < 4; i++) {
-        volatile uint8_t value = adc_memory_position[i]; // Leser 8-bit data fra ADC
+        volatile uint8_t value = adc_memory_position[i];
 
         adc->voltages[i] = value;
 
@@ -80,7 +111,11 @@ int get_joy_stick_distance_from_center(struct Joy_stick *joy_stick) {
     return (int) sqrt(sq_sum);
 }
 
-void button_init() {
-    DDRE &= ~(1 << PE2);
-    DDRE &= ~(1 << PE0);
+__attribute__((unused))
+void print_adc_info(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders) {
+
+    printf("angle: %d, distance: %d \n", (int) joy_stick->current_angle, get_joy_stick_distance_from_center(joy_stick));
+    printf("joy_stick_values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
+    printf("Sliders values: %02x : %02x \n", sliders->current_voltage[0], sliders->current_voltage[1]);
 }
+

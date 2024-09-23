@@ -1,8 +1,11 @@
+#define SRAM_START 0x1800
+
 #include <stdlib.h>
 #include <avr/io.h>
 #include <stdio.h>
 
 #include "sram.h"
+
 
 void EXMEM_init() {
     MCUCR = (1 << SRE); // Enable SRAM i ATmega162
