@@ -8,8 +8,9 @@
 #include <stdbool.h>
 
 #include "uart.h"
-// #include "sram.h"
+#include "peripherals/sram.h"
 #include "peripherals/adc.h"
+#include "peripherals/oled.h"
 
 #define INTERNAL_MEMORY_END 0x4FF
 #define OLED_COMMAND_START 0x1000
@@ -20,10 +21,12 @@
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
 
+/*
 void EXMEM_init() {
     MCUCR = (1 << SRE); // Enable SRAM i ATmega162
     SFIOR = (1 << XMM2);
 }
+ */
 
 int main() {
     USART_Init(MYUBRR);
@@ -44,13 +47,13 @@ int main() {
     printf("Getting center position on joystick");
     _delay_ms(500);
 
-    get_new_adc_values(&adc, &joy_stick);
+    get_new_adc_values(&adc);
     set_center_voltages(&joy_stick, &adc);
 
     printf("Center voltages collected, continuing");
 
     while(1) {
-        get_new_adc_values(&adc, &joy_stick);
+        get_new_adc_values(&adc);
         set_joy_stick_voltages(&adc, &joy_stick);
         set_slider_voltages(&adc, &sliders);
 

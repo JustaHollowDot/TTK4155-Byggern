@@ -5,7 +5,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 
-// void EXMEM_init();
-void SRAM_test(void);
+void EXMEM_init();
+// void SRAM_test(void);
 
 #endif
