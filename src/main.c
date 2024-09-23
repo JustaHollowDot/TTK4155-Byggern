@@ -1,3 +1,4 @@
+#define F_CPU 4915200UL
 #define FOSC 4915200UL
 
 #include <avr/io.h>
@@ -36,23 +37,29 @@ int main() {
     joy_stick.adc_indexes[0] = 0;
     joy_stick.adc_indexes[1] = 1;
 
+    struct Sliders sliders = {};
+    sliders.adc_indexes[0] = 2;
+    sliders.adc_indexes[1] = 3;
+
     printf("Getting center position on joystick");
     _delay_ms(500);
 
-    get_new_adc_values(adc, joy_stick);
-    set_center_voltages(joy_stick, adc);
+    get_new_adc_values(&adc, &joy_stick);
+    set_center_voltages(&joy_stick, &adc);
 
     printf("Center voltages collected, continuing");
 
     while(1) {
-        read_adc();
+        get_new_adc_values(&adc, &joy_stick);
+        set_joy_stick_voltages(&adc, &joy_stick);
+        set_slider_voltages(&adc, &sliders);
 
-        get_new_adc_values(adc, joy_stick);
-        set_min_max_voltages(joy_stick, adc);
-        set_joy_stick_angle(joy_stick);
+        set_min_max_voltages(&joy_stick, &adc);
+        set_joy_stick_angle(&joy_stick);
 
-        printf("angle: %x \n", (int)(joy_stick.current_angle * 1000));
-        printf("test: %02x : %02x \n", joy_stick.current_voltage[0], joy_stick.current_voltage[1]);
+        printf("angle: %d, distance: %d \n", (int) joy_stick.current_angle, get_joy_stick_distance_from_center(&joy_stick));
+        printf("joy_stick_values: %02x : %02x \n", joy_stick.current_voltage[0], joy_stick.current_voltage[1]);
+        printf("Sliders values: %02x : %02x \n", sliders.current_voltage[0], sliders.current_voltage[1]);
 
         _delay_ms(1000);
     }

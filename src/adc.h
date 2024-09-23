@@ -23,13 +23,14 @@ struct Joy_stick {
 };
 
 struct Sliders {
+    uint8_t adc_indexes[2];
     uint8_t current_voltage[2];
-    uint8_t current_position[2];
+    // uint8_t current_position[2];
 };
 
 volatile char *adc_memory_position = (char *) 0x1400; // 0x1400 er start-adressen til ADC
 
-void get_new_adc_values(struct Adc adc, struct Joy_stick joy_stick) {
+void get_new_adc_values(struct Adc *adc, struct Joy_stick *joy_stick) {
     adc_memory_position[0] = 1;
 
     _delay_us(100);
@@ -37,68 +38,72 @@ void get_new_adc_values(struct Adc adc, struct Joy_stick joy_stick) {
     for (int i = 0; i < 4; i++) {
         volatile uint8_t value = adc_memory_position[i]; // Leser 8-bit data fra ADC
 
-        printf("%02X", value); //Printer til seriell aka putty
-        printf(" : ");
+        adc->voltages[i] = value;
 
-        adc.voltages[i] = value; // Leser 8-bit data fra ADC
-
-        if (adc.voltages[i] > adc.max_voltage_values[i]) {
-            adc.max_voltage_values[i] = adc.voltages[i];
+        if (adc->voltages[i] > adc->max_voltage_values[i]) {
+            adc->max_voltage_values[i] = adc->voltages[i];
         }
 
-        if (adc.voltages[i] < adc.min_voltage_values[i]) {
-            adc.min_voltage_values[i] = adc.voltages[i];
+        if (adc->voltages[i] < adc->min_voltage_values[i]) {
+            adc->min_voltage_values[i] = adc->voltages[i];
         }
     }
+}
 
-    printf("\n");
+void set_joy_stick_voltages(struct Adc *adc, struct Joy_stick *joy_stick) {
+    joy_stick->current_voltage[0] = adc->voltages[joy_stick->adc_indexes[0]];
+    joy_stick->current_voltage[1] = adc->voltages[joy_stick->adc_indexes[1]];
+}
 
-    joy_stick.current_voltage[0] = adc.voltages[joy_stick.adc_indexes[0]];
-    joy_stick.current_voltage[1] = adc.voltages[joy_stick.adc_indexes[1]];
+void set_slider_voltages(struct Adc *adc, struct Sliders *sliders) {
+    sliders->current_voltage[0] = adc->voltages[sliders->adc_indexes[0]];
+    sliders->current_voltage[1] = adc->voltages[sliders->adc_indexes[1]];
 }
 
 
-void set_center_voltages(struct Joy_stick joy_stick, struct Adc adc) {
-    joy_stick.center_voltage[0] = adc.voltages[joy_stick.adc_indexes[0]];
-    joy_stick.center_voltage[1] = adc.voltages[joy_stick.adc_indexes[1]];
+void set_center_voltages(struct Joy_stick *joy_stick, struct Adc *adc) {
+    joy_stick->center_voltage[0] = adc->voltages[joy_stick->adc_indexes[0]];
+    joy_stick->center_voltage[1] = adc->voltages[joy_stick->adc_indexes[1]];
 
 }
 
-void set_min_max_voltages(struct Joy_stick joy_stick, struct Adc adc) {
-    joy_stick.max_voltages[0] = adc.max_voltage_values[joy_stick.adc_indexes[0]];
-    joy_stick.max_voltages[1] = adc.max_voltage_values[joy_stick.adc_indexes[1]];
+void set_min_max_voltages(struct Joy_stick *joy_stick, struct Adc *adc) {
+    joy_stick->max_voltages[0] = adc->max_voltage_values[joy_stick->adc_indexes[0]];
+    joy_stick->max_voltages[1] = adc->max_voltage_values[joy_stick->adc_indexes[1]];
 
-    joy_stick.min_voltages[0] = adc.min_voltage_values[joy_stick.adc_indexes[0]];
-    joy_stick.min_voltages[1] = adc.min_voltage_values[joy_stick.adc_indexes[1]];
+    joy_stick->min_voltages[0] = adc->min_voltage_values[joy_stick->adc_indexes[0]];
+    joy_stick->min_voltages[1] = adc->min_voltage_values[joy_stick->adc_indexes[1]];
 }
 
 
-void set_joy_stick_angle(struct Joy_stick joy_stick) {
-    double delta_x = joy_stick.current_voltage[0] - joy_stick.center_voltage[0];
-    double delta_y = joy_stick.current_voltage[1] - joy_stick.center_voltage[1];
+void set_joy_stick_angle(struct Joy_stick *joy_stick) {
+    double delta_x = joy_stick->current_voltage[0] - joy_stick->center_voltage[0];
+    double delta_y = joy_stick->current_voltage[1] - joy_stick->center_voltage[1];
 
-    // scale x and y to a number between 0 and 100
+    /*
     if (delta_x > 0) {
-        delta_x = delta_x / joy_stick.max_voltages[0];
+        delta_x = delta_x / joy_stick->max_voltages[0];
     } else {
-        delta_x = delta_x / joy_stick.min_voltages[0];
+        delta_x = delta_x / joy_stick->min_voltages[0];
     }
 
     if (delta_y > 0) {
-        delta_y = delta_y / joy_stick.max_voltages[1];
+        delta_y = delta_y / joy_stick->max_voltages[1];
     } else {
-        delta_y = delta_y / joy_stick.min_voltages[1];
+        delta_y = delta_y / joy_stick->min_voltages[1];
     }
+    */
 
-    joy_stick.current_angle = (float) (atan2(delta_x, delta_y) * 57);
+    joy_stick->current_angle = (float) (atan2(delta_y, delta_x) * 57);
 }
 
-int get_joy_stick_distance_from_center(struct Joy_stick joy_stick) {
-    int distance = 0;
+int get_joy_stick_distance_from_center(struct Joy_stick *joy_stick) {
+    int delta_x = joy_stick->current_voltage[0] - joy_stick->center_voltage[0];
+    int delta_y = joy_stick->current_voltage[1] - joy_stick->center_voltage[1];
 
-    // todo!
+    int sq_sum = delta_x * delta_x + delta_y * delta_y;
 
-    return distance;
+    return sqrt(sq_sum);
 }
 
 void button_init() {
