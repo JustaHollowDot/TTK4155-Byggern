@@ -25,7 +25,6 @@ void adc_setup(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sli
 }
 
 void adc_update(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders) {
-
     get_new_adc_values(adc);
     set_joy_stick_voltages(adc, joy_stick);
     set_slider_voltages(adc, sliders);
@@ -113,7 +112,6 @@ int get_joy_stick_distance_from_center(struct Joy_stick *joy_stick) {
 
 __attribute__((unused))
 void print_adc_info(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders) {
-
     printf("angle: %d, distance: %d \n", (int) joy_stick->current_angle, get_joy_stick_distance_from_center(joy_stick));
     printf("joy_stick_values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
     printf("Sliders values: %02x : %02x \n", sliders->current_voltage[0], sliders->current_voltage[1]);
