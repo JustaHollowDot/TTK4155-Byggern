@@ -9,7 +9,7 @@
 
 #include "uart.h"
 // #include "sram.h"
-#include "adc.h"
+#include "peripherals/adc.h"
 
 #define INTERNAL_MEMORY_END 0x4FF
 #define OLED_COMMAND_START 0x1000
