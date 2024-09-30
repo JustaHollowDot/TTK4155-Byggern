@@ -42,8 +42,6 @@ int main() {
 
             oled_write_line(&oled, "Loop finished");
 
-            printf("loop finished ");
-
             oled_display_buffer(&oled);
 
             _delay_ms(100);

@@ -11,16 +11,8 @@
 #define FONT_SIZE 5
 
 
-struct FrameBuffer {
-    // Buffer with 8 pages with 132 columns of 8 bits each.
-    uint8_t frame_buffer[PAGE_AMOUNT][SCREEN_WIDTH];
-};
-
 struct Oled {
-    // Buffer with 8 pages with 132 columns of 8 bits each.
-    volatile uint8_t* frame_buffer_addr; // Start address for the two frames
-    uint16_t frame_size;
-
+    volatile uint8_t* frame_buffer_addr; // Buffer with 8 pages with 132 columns of 8 bits each.
     uint8_t current_page;
     uint8_t current_column;
 
