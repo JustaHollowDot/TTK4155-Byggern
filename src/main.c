@@ -18,9 +18,6 @@ int main() {
     EXMEM_init();
     buttons_init();
 
-    printf("\n");
-    printf("a\n");
-
     _delay_ms(100);
 
     struct Adc adc = {};
@@ -28,19 +25,21 @@ int main() {
     struct Sliders sliders = {};
     adc_setup(&adc, &joy_stick, &sliders);
 
-    printf("\n");
     struct Oled oled = {};
+
     oled_init();
 
-    printf("c");
+    oled_clear(&oled);
 
     while(1) {
-        oled_write_char(/*&oled, */'a');
-        printf("a");
-        // adc_update(&adc, &joy_stick, &sliders);
+        for (int i = 0; i < PAGE_AMOUNT; ++i) {
+            oled_write_line(&oled, "test string");
+            // adc_update(&adc, &joy_stick, &sliders);
 
-        // print_adc_info(&adc, &joy_stick, &sliders);
+            // print_adc_info(&adc, &joy_stick, &sliders);
+            _delay_ms(1000);
+        }
 
-        _delay_ms(1000);
+        oled_clear(&oled);
     }
 }
