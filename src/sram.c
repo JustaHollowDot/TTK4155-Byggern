@@ -1,4 +1,3 @@
-#define SRAM_START 0x1800
 
 #include <stdlib.h>
 #include <avr/io.h>

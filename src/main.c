@@ -9,6 +9,7 @@
 #include "adc.h"
 #include "oled.h"
 #include "button.h"
+#include "oled_commands.h"
 
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
@@ -23,20 +24,27 @@ int main() {
     struct Adc adc = {};
     struct Joy_stick joy_stick = {};
     struct Sliders sliders = {};
-    adc_setup(&adc, &joy_stick, &sliders);
+    // adc_setup(&adc, &joy_stick, &sliders);
 
     struct Oled oled = {};
 
-    oled_init();
-
+    oled_init(&oled);
     oled_clear(&oled);
+
+    set_ignore_ram_content(true);
+    _delay_ms(500);
+    set_ignore_ram_content(false);
+    _delay_ms(500);
 
     while(1) {
         for (int i = 0; i < PAGE_AMOUNT; ++i) {
-            oled_write_line(&oled, "test string");
             // adc_update(&adc, &joy_stick, &sliders);
-
             // print_adc_info(&adc, &joy_stick, &sliders);
+
+            oled_write_line(&oled, "ADC values updated!");
+
+            printf("ADC values updated!");
+
             _delay_ms(1000);
         }
 

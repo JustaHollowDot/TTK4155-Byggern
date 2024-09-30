@@ -4,14 +4,23 @@
 #include "avr/io.h"
 #include <stdbool.h>
 
+#include "sram.h"
 
 #define SCREEN_WIDTH 128
 #define PAGE_AMOUNT 8
 #define FONT_SIZE 5
 
+
+struct FrameBuffer {
+    // Buffer with 8 pages with 132 columns of 8 bits each.
+    uint8_t frame_buffer[PAGE_AMOUNT][SCREEN_WIDTH];
+};
+
 struct Oled {
-    // Two circular buffers with 8 pages with 132 columns of 8 bits each.
-    // uint8_t frame_buffers[2][PAGE_AMOUNT][SCREEN_WIDTH];
+    // struct FrameBuffer buffer[2];
+    // Buffer with 8 pages with 132 columns of 8 bits each.
+    volatile uint8_t* frame_buffer_addr; // Start address for the two frames
+    uint16_t frame_size; // size of a single frame
 
     // Allow for rotating display without rewriting the whole buffer
     uint8_t first_page[2];
@@ -20,13 +29,13 @@ struct Oled {
     uint8_t current_page[2];
     uint8_t current_index[2]; // Current index inside current_page
 
-    uint8_t current_buffer;
-    bool has_changed[2];
+    uint8_t current_buffer; // Buffer that is currently being edited, and not displayed
+    uint8_t has_changed[2]; // Bitmask for checking which page has been changed for optimization purposes
     // bool is_write_mode;
 };
 
-void oled_write_command(uint8_t command);
-void oled_write_byte(struct Oled *oled, uint8_t data);
+void oled_write_data(struct Oled *oled, uint8_t data);
+void oled_write_buffer(struct Oled *oled);
 
 // todo! write more functions for different command functions
 void oled_goto_page(struct Oled *oled, uint8_t page);
@@ -35,7 +44,8 @@ void oled_goto_pos(struct Oled *oled, uint8_t page, uint8_t column);
 void oled_goto_home(struct Oled *oled);
 void oled_increment_page(struct Oled *oled);
 
-void oled_init(/*struct Oled *oled*/);
+void oled_init(struct Oled *oled);
+void oled_init_commands();
 void oled_reset(struct Oled *oled);
 void oled_clear(struct Oled *oled);
 void oled_clear_line(struct Oled *oled, uint8_t page);
