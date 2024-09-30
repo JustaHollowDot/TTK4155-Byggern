@@ -30,24 +30,26 @@ int main() {
 
     oled_init(&oled);
     oled_clear(&oled);
+    oled_display_buffer(&oled);
 
-    set_ignore_ram_content(true);
-    _delay_ms(500);
-    set_ignore_ram_content(false);
-    _delay_ms(500);
+    _delay_ms(1000);
+
 
     while(1) {
         for (int i = 0; i < PAGE_AMOUNT; ++i) {
             // adc_update(&adc, &joy_stick, &sliders);
             // print_adc_info(&adc, &joy_stick, &sliders);
 
-            oled_write_line(&oled, "ADC values updated!");
+            oled_write_line(&oled, "Loop finished");
 
-            printf("ADC values updated!");
+            printf("loop finished ");
 
-            _delay_ms(1000);
+            oled_display_buffer(&oled);
+
+            _delay_ms(100);
         }
 
         oled_clear(&oled);
+        oled_display_buffer(&oled);
     }
 }

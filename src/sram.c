@@ -11,7 +11,7 @@ void EXMEM_init() {
     SFIOR = (1 << XMM2); // Maskerer PC4-PC7 på ATmega162. Dvs passer på at vi ikke kuker med JTAG-pinnene. Sjekk "Table 4", side 32 i ATmega162-databladet.
 }
 
-/*
+__attribute__((unused))
 void SRAM_test(void) {
     volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
     uint16_t ext_ram_size = 0x800;
@@ -44,4 +44,3 @@ void SRAM_test(void) {
     }
     printf("SRAM test completed with \n%4d errors in write phase and \n%4d errors in retrieval phase\n\n", write_errors, retrieval_errors);
 }
-*/
