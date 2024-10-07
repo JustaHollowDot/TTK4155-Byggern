@@ -25,7 +25,6 @@ struct Oled {
 void oled_write_data(struct Oled *oled, uint8_t data);
 void oled_display_buffer(struct Oled *oled);
 
-// todo! write more functions for different command functions
 void oled_goto_page(struct Oled *oled, uint8_t page);
 void oled_goto_column(struct Oled *oled, uint8_t column);
 void oled_goto_pos(struct Oled *oled, uint8_t page, uint8_t column);

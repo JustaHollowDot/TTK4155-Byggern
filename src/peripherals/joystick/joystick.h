@@ -28,16 +28,16 @@ enum Direction {
 struct JoyStick {
     struct Button button;
 
-    uint8_t adc_indexes[2];
-    uint8_t center_voltage[2];
-    uint8_t max_voltages[2];
-    uint8_t min_voltages[2];
+    volatile uint8_t adc_indexes[2];
+    volatile uint8_t center_voltage[2];
+    volatile uint8_t max_voltages[2];
+    volatile uint8_t min_voltages[2];
 
-    uint8_t current_voltage[2];
-    uint16_t current_distance;
-    uint16_t current_angle;
+    volatile uint8_t current_voltage[2];
+    volatile uint16_t current_distance;
+    volatile uint16_t current_angle;
 
-    enum Direction current_direction;
+    volatile enum Direction current_direction;
 };
 
 void joy_stick_setup(struct JoyStick *joy_stick);
@@ -47,7 +47,7 @@ void joy_set_stick_center_voltages(struct Adc *adc, struct JoyStick *joy_stick);
 void joy_stick_set_min_max_voltages(struct Adc *adc, struct JoyStick *joy_stick);
 void joy_stick_set_angle(struct JoyStick *joy_stick);
 void joy_stick_set_distance_from_center(struct JoyStick *joy_stick);
-enum Direction joy_stick_get_direction(struct JoyStick *joy_stick);
+void joy_stick_set_direction(struct JoyStick *joy_stick);
 
 __attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
 void print_joy_stick_info(struct JoyStick *joy_stick);

@@ -24,13 +24,16 @@ int main() {
     USART_Init(MYUBRR);
     EXMEM_init();
 
-    _delay_ms(100);
 
     struct Adc adc = {};
     struct JoyStick joy_stick = {};
     struct Slider slider = {};
     adc_setup(&adc);
+
+    _delay_ms(100);
+
     joy_stick_setup(&joy_stick);
+    joy_stick_update(&adc, &joy_stick);
     joy_set_stick_center_voltages(&adc, &joy_stick);
     slider_setup(&slider);
 
@@ -57,10 +60,10 @@ int main() {
         joy_stick_update(&adc, &joy_stick);
         slider_update(&adc, &slider);
 
-        print_adc_info(&adc);
+        // print_adc_info(&adc);
         print_joy_stick_info(&joy_stick);
-        print_slider_info(&slider);
-        printf("\n");
+        // print_slider_info(&slider);
+        // printf("\n");
 
         if (joy_stick.button.is_pressed) {
             printf("Button pressed, menu index: %d\n", current_menu_index);
@@ -77,6 +80,7 @@ int main() {
             // oled_write_line(&oled, "Loop finished");
         // }
 
+        printf("\n");
         oled_clear(&oled);
     }
 }
