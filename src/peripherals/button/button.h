@@ -8,7 +8,8 @@
 struct Button {
     volatile uint8_t* port_pin_register;
     uint8_t pin;
-    bool is_on;
+    bool is_pressed;
+    bool is_inverted;
 };
 
 void button_init(struct Button *button, volatile uint8_t* port_direction_register);

@@ -17,6 +17,14 @@
 #define BUTTON_PORT_PIN_REGISTER PINE
 #define BUTTON_PORT_DIRECTION_REGISTER DDRE
 
+enum Direction {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    CENTER
+};
+
 struct JoyStick {
     struct Button button;
 
@@ -26,7 +34,10 @@ struct JoyStick {
     uint8_t min_voltages[2];
 
     uint8_t current_voltage[2];
-    float current_angle;
+    uint16_t current_distance;
+    uint16_t current_angle;
+
+    enum Direction current_direction;
 };
 
 void joy_stick_setup(struct JoyStick *joy_stick);
@@ -35,6 +46,10 @@ void joy_stick_set_voltages(struct Adc *adc, struct JoyStick *joy_stick);
 void joy_set_stick_center_voltages(struct Adc *adc, struct JoyStick *joy_stick);
 void joy_stick_set_min_max_voltages(struct Adc *adc, struct JoyStick *joy_stick);
 void joy_stick_set_angle(struct JoyStick *joy_stick);
-int joy_stick_get_distance_from_center(struct JoyStick *joy_stick);
+void joy_stick_set_distance_from_center(struct JoyStick *joy_stick);
+enum Direction joy_stick_get_direction(struct JoyStick *joy_stick);
+
+__attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
+void print_joy_stick_info(struct JoyStick *joy_stick);
 
 #endif //BYGGERN_PING_PONG_JOYSTICK_H

@@ -4,8 +4,14 @@ void joy_stick_setup(struct JoyStick *joy_stick) {
     joy_stick->adc_indexes[0] = ADC_INDEX_0;
     joy_stick->adc_indexes[1] = ADC_INDEX_1;
 
+    joy_stick->min_voltages[0] = -1;
+    joy_stick->min_voltages[1] = -1;
+    joy_stick->max_voltages[0] = 0;
+    joy_stick->max_voltages[1] = 0;
+
     joy_stick->button.port_pin_register = &BUTTON_PORT_PIN_REGISTER;
     joy_stick->button.pin = BUTTON_JOY_STICK_PIN;
+    joy_stick->button.is_inverted = true;
     button_init(&joy_stick->button, &BUTTON_PORT_DIRECTION_REGISTER);
 }
 
@@ -13,7 +19,8 @@ void joy_stick_update(struct Adc *adc, struct JoyStick *joy_stick) {
     joy_stick_set_voltages(adc, joy_stick);
     joy_stick_set_min_max_voltages(adc, joy_stick);
     joy_stick_set_angle(joy_stick);
-    joy_stick_get_distance_from_center(joy_stick);
+    joy_stick_set_distance_from_center(joy_stick);
+    joy_stick_get_direction(joy_stick);
 
     button_update(&joy_stick->button);
 }
@@ -66,24 +73,38 @@ void joy_stick_set_angle(struct JoyStick *joy_stick) {
         delta_y = delta_y / max_delta;
     }
 
-    joy_stick->current_angle = (float) (atan2f(delta_y, delta_x) * 57);
+    joy_stick->current_angle = (uint16_t) (atan2f(delta_y, delta_x) * 57) + 180;
 }
 
-int joy_stick_get_distance_from_center(struct JoyStick *joy_stick) {
+void joy_stick_set_distance_from_center(struct JoyStick *joy_stick) {
     int delta_x = joy_stick->current_voltage[0] - joy_stick->center_voltage[0];
     int delta_y = joy_stick->current_voltage[1] - joy_stick->center_voltage[1];
 
     int sq_sum = delta_x * delta_x + delta_y * delta_y;
 
-    return (int) sqrt(sq_sum);
+    joy_stick->current_distance = (uint16_t) sqrt(sq_sum);
 }
 
 
-/*
-__attribute__((unused))
-void print_adc_info(struct Adc *adc, struct JoyStick *joy_stick, struct Slider *sliders) {
-    printf("angle: %d, distance: %d \n", (int) joy_stick->current_angle, get_joy_stick_distance_from_center(joy_stick));
-    printf("joy_stick_values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
-    printf("Slider values: %02x : %02x \n", sliders->current_voltage[0], sliders->current_voltage[1]);
+__attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
+void print_joy_stick_info(struct JoyStick *joy_stick) {
+    printf("Angle: %d, distance: %d \n", (int) joy_stick->current_angle, (int) joy_stick->current_angle);
+    printf("Joy stick values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
+    printf("Button pressed: %s\n", joy_stick->button.is_pressed ? "true" : "false");
 }
-*/
+
+enum Direction joy_stick_get_direction(struct JoyStick *joy_stick) {
+    if (joy_stick->current_distance < 50) {
+        return CENTER;
+    }
+
+    if (joy_stick->current_angle < 45 | joy_stick->current_angle > 315) {
+        return DOWN;
+    } else if (joy_stick->current_angle < 135) {
+        return LEFT;
+    } else if (joy_stick->current_angle < 225) {
+        return UP;
+    } else {
+        return RIGHT;
+    }
+}

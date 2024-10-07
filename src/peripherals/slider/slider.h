@@ -24,4 +24,7 @@ void slider_update(struct Adc *adc, struct Slider *slider);
 
 void set_slider_voltages(struct Adc *adc, struct Slider *slider);
 
+__attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
+void print_slider_info(struct Slider *slider);
+
 #endif //BYGGERN_PING_PONG_SLIDER_H

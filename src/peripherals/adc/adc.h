@@ -18,9 +18,7 @@ void adc_update(struct Adc *adc);
 
 void adc_get_new_values(struct Adc *adc);
 
-/*
 __attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
-void print_adc_info(struct Adc *adc, struct JoyStick *joy_stick, struct Sliders *sliders);
-*/
+void print_adc_info(struct Adc *adc);
 
 #endif //TEST_PLATFORMIO_ADC_H

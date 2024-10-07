@@ -16,15 +16,22 @@
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
 
+void print_test() {
+    printf("test\n");
+}
+
 int main() {
     USART_Init(MYUBRR);
     EXMEM_init();
+
+    _delay_ms(100);
 
     struct Adc adc = {};
     struct JoyStick joy_stick = {};
     struct Slider slider = {};
     adc_setup(&adc);
     joy_stick_setup(&joy_stick);
+    joy_set_stick_center_voltages(&adc, &joy_stick);
     slider_setup(&slider);
 
     struct Oled oled = {};
@@ -33,21 +40,43 @@ int main() {
     oled_clear(&oled);
     oled_display_buffer(&oled);
 
+    struct Menu main_menu = {};
+    main_menu.text = "Main menu";
+
+    menu_add_sub_menu(&main_menu, "Sub menu", print_test);
+    menu_add_sub_menu(&main_menu, "Sub menu2", print_test);
+    menu_add_sub_menu(&main_menu, "Sub menu3", print_test);
+
+    struct Menu current_menu = main_menu;
+    uint8_t current_menu_index = 0;
+
+    _delay_ms(100);
+
     while(1) {
-        for (int i = 0; i < PAGE_AMOUNT; ++i) {
-            adc_update(&adc);
-            joy_stick_update(&adc, &joy_stick);
-            slider_update(&adc, &slider);
-            // print_adc_info(&adc, &joy_stick, &sliders);
+        adc_update(&adc);
+        joy_stick_update(&adc, &joy_stick);
+        slider_update(&adc, &slider);
 
-            oled_write_line(&oled, "Loop finished");
+        print_adc_info(&adc);
+        print_joy_stick_info(&joy_stick);
+        print_slider_info(&slider);
+        printf("\n");
 
-            oled_display_buffer(&oled);
-
-            _delay_ms(1000);
+        if (joy_stick.button.is_pressed) {
+            printf("Button pressed, menu index: %d\n", current_menu_index);
         }
 
-        oled_clear(&oled);
+        menu_update(&current_menu, &joy_stick, &current_menu_index);
+        menu_print_current_menu(&oled, &current_menu, current_menu_index);
         oled_display_buffer(&oled);
+
+        _delay_ms(1000);
+
+
+        // for (int i = 0; i < PAGE_AMOUNT; ++i) {
+            // oled_write_line(&oled, "Loop finished");
+        // }
+
+        oled_clear(&oled);
     }
 }

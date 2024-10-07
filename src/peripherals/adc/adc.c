@@ -37,11 +37,9 @@ void adc_get_new_values(struct Adc *adc) {
     }
 }
 
-/*
-__attribute__((unused))
-void print_adc_info(struct Adc *adc, struct JoyStick *joy_stick, struct Slider *sliders) {
-    printf("angle: %d, distance: %d \n", (int) joy_stick->current_angle, get_joy_stick_distance_from_center(joy_stick));
-    printf("joy_stick_values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
-    printf("Slider values: %02x : %02x \n", sliders->current_voltage[0], sliders->current_voltage[1]);
+__attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
+void print_adc_info(struct Adc *adc) {
+    printf("ADC voltages -> %02x : %02x : %02x : %02x\n",
+           adc->voltages[0], adc->voltages[1],
+           adc->voltages[2], adc->voltages[3]);
 }
-*/
