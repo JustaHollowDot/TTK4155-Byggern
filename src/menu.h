@@ -4,6 +4,8 @@
 #include "avr/io.h"
 #include <stdbool.h>
 
+#include "./peripherals/joystick/joystick.h"
+
 #define MAX_SUBMENUS 10
 
 struct Menu {
@@ -13,6 +15,7 @@ struct Menu {
     struct Menu* sub_menu[MAX_SUBMENUS];
 };
 
+void menu_update(struct Menu *menu, struct JoyStick *joyStick);
 
 struct Menu* menu_add_sub_menu(struct Menu* parent_menu, char* text, void (*function)());
 

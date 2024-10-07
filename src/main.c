@@ -19,9 +19,6 @@
 int main() {
     USART_Init(MYUBRR);
     EXMEM_init();
-    buttons_init();
-
-    _delay_ms(100);
 
     struct Adc adc = {};
     struct JoyStick joy_stick = {};

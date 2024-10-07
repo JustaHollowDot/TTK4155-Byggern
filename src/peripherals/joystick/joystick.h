@@ -9,11 +9,17 @@
 #include <stdbool.h>
 
 #include "../adc/adc.h"
+#include "../button/button.h"
 
 #define ADC_INDEX_0 0
 #define ADC_INDEX_1 1
+#define BUTTON_JOY_STICK_PIN PE2
+#define BUTTON_PORT_PIN_REGISTER PINE
+#define BUTTON_PORT_DIRECTION_REGISTER DDRE
 
 struct JoyStick {
+    struct Button button;
+
     uint8_t adc_indexes[2];
     uint8_t center_voltage[2];
     uint8_t max_voltages[2];
