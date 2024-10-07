@@ -44,12 +44,11 @@ void oled_write_char(struct Oled *oled, char c) {
     }
 }
 
-void oled_init(struct Oled *oled) {
+void oled_init(struct Oled *oled, uint8_t* start_addr) {
     oled_init_commands();
     oled_clear(oled);
 
-    oled->frame_buffer_addr = (uint8_t*) SRAM_START;
-    oled->frame_size = 1024;
+    oled->frame_buffer_addr = (uint8_t*) start_addr;
 }
 
 void oled_init_commands() {

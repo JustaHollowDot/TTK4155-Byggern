@@ -1,5 +1,5 @@
 # List all source files to be compiled; separate with space
-SOURCE_FILES := main.c uart.c adc.c button.c oled.c sram.c oled_commands.c
+SOURCE_FILES := main.c uart.c adc.c button.c oled.c sram.c oled_commands.c menu.c joystick.c
 
 # Set this flag to "yes" (no quotes) to use JTAG; otherwise ISP (SPI) is used
 PROGRAM_WITH_JTAG := yes
@@ -9,6 +9,8 @@ PROGRAMMER := atmelice_isp
 ifeq ($(PROGRAM_WITH_JTAG), yes)
 	PROGRAMMER := atmelice
 endif
+
+vpath %.c ./peripherals/adc ./peripherals/button ./peripherals/oled ./peripherals/sram ./peripherals/uart
 
 BUILD_DIR := build
 TARGET_CPU := atmega162

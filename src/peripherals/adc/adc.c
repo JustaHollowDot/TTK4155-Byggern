@@ -1,3 +1,5 @@
+#define F_CPU 4915200UL
+
 #include "adc.h"
 
 #define ADC_START 0x1400

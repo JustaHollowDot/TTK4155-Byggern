@@ -4,7 +4,7 @@
 #include "avr/io.h"
 #include <stdbool.h>
 
-#include "sram.h"
+// #include "peripherals/sram/sram.h"
 
 #define SCREEN_WIDTH 128
 #define PAGE_AMOUNT 8
@@ -32,7 +32,7 @@ void oled_goto_pos(struct Oled *oled, uint8_t page, uint8_t column);
 void oled_goto_home(struct Oled *oled);
 void oled_increment_page(struct Oled *oled);
 
-void oled_init(struct Oled *oled);
+void oled_init(struct Oled *oled, uint8_t* start_addr);
 void oled_init_commands();
 void oled_reset(struct Oled *oled);
 void oled_clear(struct Oled *oled);
