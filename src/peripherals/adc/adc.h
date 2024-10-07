@@ -12,34 +12,15 @@ struct Adc {
     uint8_t max_voltage_values[4];
 };
 
-struct Joy_stick {
-    uint8_t adc_indexes[2];
-    uint8_t center_voltage[2];
-    uint8_t max_voltages[2];
-    uint8_t min_voltages[2];
 
-    uint8_t current_voltage[2];
-    float current_angle;
-};
+void adc_setup(struct Adc *adc);
+void adc_update(struct Adc *adc);
 
-struct Sliders {
-    uint8_t adc_indexes[2];
-    uint8_t current_voltage[2];
-    // uint8_t current_position[2];
-};
+void adc_get_new_values(struct Adc *adc);
 
-void adc_setup(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders);
-void adc_update(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders);
-
-void get_new_adc_values(struct Adc *adc);
-void set_joy_stick_voltages(struct Adc *adc, struct Joy_stick *joy_stick);
-void set_slider_voltages(struct Adc *adc, struct Sliders *sliders);
-void set_center_voltages(struct Joy_stick *joy_stick, struct Adc *adc);
-void set_min_max_voltages(struct Joy_stick *joy_stick, struct Adc *adc);
-void set_joy_stick_angle(struct Joy_stick *joy_stick);
-int get_joy_stick_distance_from_center(struct Joy_stick *joy_stick);
-
+/*
 __attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
-void print_adc_info(struct Adc *adc, struct Joy_stick *joy_stick, struct Sliders *sliders);
+void print_adc_info(struct Adc *adc, struct JoyStick *joy_stick, struct Sliders *sliders);
+*/
 
 #endif //TEST_PLATFORMIO_ADC_H

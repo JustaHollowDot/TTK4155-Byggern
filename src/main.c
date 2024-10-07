@@ -9,6 +9,8 @@
 #include "peripherals/adc/adc.h"
 #include "peripherals/oled/oled.h"
 #include "peripherals/button/button.h"
+#include "peripherals/joystick/joystick.h"
+#include "peripherals/slider/slider.h"
 #include "menu.h"
 
 #define BAUD 4800
@@ -22,9 +24,11 @@ int main() {
     _delay_ms(100);
 
     struct Adc adc = {};
-    struct Joy_stick joy_stick = {};
-    struct Sliders sliders = {};
-    adc_setup(&adc, &joy_stick, &sliders);
+    struct JoyStick joy_stick = {};
+    struct Slider slider = {};
+    adc_setup(&adc);
+    joy_stick_setup(&joy_stick);
+    slider_setup(&slider);
 
     struct Oled oled = {};
 
@@ -34,8 +38,10 @@ int main() {
 
     while(1) {
         for (int i = 0; i < PAGE_AMOUNT; ++i) {
-            adc_update(&adc, &joy_stick, &sliders);
-            print_adc_info(&adc, &joy_stick, &sliders);
+            adc_update(&adc);
+            joy_stick_update(&adc, &joy_stick);
+            slider_update(&adc, &slider);
+            // print_adc_info(&adc, &joy_stick, &sliders);
 
             oled_write_line(&oled, "Loop finished");
 
