@@ -1,8 +1,10 @@
+#define F_CPU 4915200UL
+
 #include "spi.h"
 
 void spi_master_init(void) {
-    DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK);
-    SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
+    DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS);
+    SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPIE);
 
     spi_end_message();
 }
