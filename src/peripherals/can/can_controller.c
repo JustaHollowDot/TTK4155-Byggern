@@ -10,9 +10,9 @@ void mcp_init() {
     _delay_ms(1);
 
     uint8_t value = mcp_read(MCP_CANSTAT); //Se kode for denne lenger ned
-	if ((value & MODE_MASK) != MODE_CONFIG) {
-		printf("MCP2515 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \r\n", value);
-	}
+    if ((value & MODE_MASK) != MODE_CONFIG) {
+        printf("MCP2515 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \r\n", value);
+    }
 }
 
 void mcp_reset() {
