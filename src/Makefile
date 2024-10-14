@@ -10,7 +10,7 @@ ifeq ($(PROGRAM_WITH_JTAG), yes)
 	PROGRAMMER := atmelice
 endif
 
-vpath %.c ./peripherals/adc ./peripherals/button ./peripherals/oled ./peripherals/sram ./peripherals/uart ./peripherals/joystick ./peripherals/slider
+vpath %.c ./peripherals/adc ./peripherals/button ./peripherals/oled ./peripherals/sram ./peripherals/uart ./peripherals/joystick ./peripherals/slider ./menu
 
 BUILD_DIR := build
 TARGET_CPU := atmega162

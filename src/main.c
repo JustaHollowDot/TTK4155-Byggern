@@ -11,14 +11,10 @@
 #include "peripherals/button/button.h"
 #include "peripherals/joystick/joystick.h"
 #include "peripherals/slider/slider.h"
-#include "menu.h"
+#include "menu/menu.h"
 
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
-
-void print_test() {
-    printf("test\n");
-}
 
 int main() {
     USART_Init(MYUBRR);
@@ -46,9 +42,9 @@ int main() {
     struct Menu main_menu = {};
     main_menu.text = "Main menu";
 
-    menu_add_sub_menu(&main_menu, "Sub menu", print_test);
-    menu_add_sub_menu(&main_menu, "Sub menu2", print_test);
-    menu_add_sub_menu(&main_menu, "Sub menu3", print_test);
+    menu_add_sub_menu(&main_menu, "Sub menu", NULL);
+    menu_add_sub_menu(&main_menu, "Sub menu2", NULL);
+    menu_add_sub_menu(&main_menu, "Sub menu3", NULL);
 
     struct Menu current_menu = main_menu;
     uint8_t current_menu_index = 0;
