@@ -8,8 +8,8 @@
 #include <util/delay.h>
 #include <stdbool.h>
 
-#include "../adc/adc.h"
-#include "../button/button.h"
+#include "button.h"
+#include "adc.h"
 
 #define ADC_INDEX_0 0
 #define ADC_INDEX_1 1

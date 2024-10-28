@@ -4,8 +4,12 @@
 #include "avr/io.h"
 #include <stdbool.h>
 
-#include "../peripherals/joystick/joystick.h"
+// #include "peripherals/oled/oled.h"
+// #include "peripherals/input/joystick.h"
+
 #include "../peripherals/oled/oled.h"
+#include "../peripherals/input/joystick.h"
+
 
 #define MAX_SUBMENUS 10
 

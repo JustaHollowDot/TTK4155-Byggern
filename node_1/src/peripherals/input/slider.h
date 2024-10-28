@@ -8,8 +8,6 @@
 #include <util/delay.h>
 #include <stdbool.h>
 
-#include "../adc/adc.h"
-
 #define SLIDER_INDEX_0 2
 #define SLIDER_INDEX_1 3
 

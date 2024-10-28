@@ -1,7 +1,7 @@
 #ifndef BYGGERN_PING_PONG_KOPI_CANCONTROLLER_H
 #define BYGGERN_PING_PONG_KOPI_CANCONTROLLER_H
 
-#include "can_controller.h"
+#include "./can_controller.h"
 
 // Send-buffer 0
 #define MCP_TXB0SIDH 0x31

@@ -4,13 +4,13 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "peripherals/input/adc.h"
 #include "peripherals/uart/uart.h"
-#include "peripherals/sram/sram.h"
-#include "peripherals/adc/adc.h"
+#include "peripherals/oled/sram.h"
 #include "peripherals/oled/oled.h"
-#include "peripherals/button/button.h"
-#include "peripherals/joystick/joystick.h"
-#include "peripherals/slider/slider.h"
+#include "peripherals/input/button.h"
+#include "peripherals/input/joystick.h"
+#include "peripherals/input/slider.h"
 #include "peripherals/can/can_controller.h"
 #include "peripherals/can/can.h"
 #include "menu/menu.h"
@@ -48,7 +48,7 @@ int main() {
 
     struct Menu current_menu = main_menu;
     uint8_t current_menu_index = 0;
-     */
+    */
 
     _delay_ms(100);
     printf("\n");
@@ -78,9 +78,9 @@ int main() {
     printf("Lengde: %d \r\n", receive.length);
     printf("Melding: %s \r\n\r\n", receive.data);
 
-    _delay_ms(100000);
-
     while(1) {
+        printf("test\n");
+        _delay_ms(1000);
         /*
         adc_update(&adc);
         joy_stick_update(&adc, &joy_stick);

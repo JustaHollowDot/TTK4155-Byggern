@@ -1,4 +1,5 @@
-#include "slider.h"
+#include "../input/adc.h"
+#include "../input/slider.h"
 
 void slider_setup(struct Slider *slider) {
     slider->adc_indexes[0] = SLIDER_INDEX_0;

@@ -1,7 +1,7 @@
 #define F_CPU 4915200UL
 
 #include "can_controller.h"
-#include "../spi/spi.h"
+#include "spi.h"
 
 void mcp_init() {
     spi_master_init();
