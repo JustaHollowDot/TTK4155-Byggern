@@ -13,6 +13,12 @@ void mcp_init() {
     if ((value & MODE_MASK) != MODE_CONFIG) {
         printf("MCP2515 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \r\n", value);
     }
+
+    // Set up CNF1, CNF2, CNF3
+    mcp_bit_modify(MCP_CNF1, 0b111111, 0b111);
+    mcp_bit_modify(MCP_CNF1, 0b11000000, 0b0);
+    mcp_bit_modify(MCP_CNF2, 0b111111, 0b110 + (0b101 << 3));
+    mcp_bit_modify(MCP_CNF3, 0b111, 0b001);
 }
 
 void mcp_reset() {

@@ -56,10 +56,9 @@ int main() {
 
     can_init();
     printf("init finished: \n");
-    mcp_set_mode(MCP_LOOPBACK_MODE);
+    mcp_set_mode(MODE_NORMAL);
     printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
 
-    printf("Sending message -> ");
 
     // Sender melding
     struct Message message = {
@@ -67,20 +66,26 @@ int main() {
             6, // Lengde på dataen
             "heiiii" // Data. Maks åtte byte
             };
+
+    printf("Sending message -> \n");
     can_send(&message); // Sender melding
 
     // Nå er meldingen sendt. Fordi vi er i loopbackmodus blir meldingen umiddelbart "mottatt" ac MCP2515.
 
     // Mottar melding
+    /*
     struct Message receive = can_receive();
     printf("Heisann sveisann, vi har fått ei melding.\r\n");
     printf("Id: %d \r\n", receive.id);
     printf("Lengde: %d \r\n", receive.length);
     printf("Melding: %s \r\n\r\n", receive.data);
+     */
 
     while(1) {
-        printf("test\n");
-        _delay_ms(1000);
+        printf("Sending message -> \n");
+        can_send(&message);
+        _delay_ms(2000);
+
         /*
         adc_update(&adc);
         joy_stick_update(&adc, &joy_stick);
