@@ -10,7 +10,7 @@ ifeq ($(PROGRAM_WITH_JTAG), yes)
 	PROGRAMMER := atmelice
 endif
 
-vpath %.c ./peripherals/can ./peripherals/input ./peripherals/oled ./peripherals/uart ./menu
+vpath %.c ./peripherals/can ./peripherals/input ./peripherals/oled ./peripherals/uart ./menu ../../shared/can_messages.h
 
 BUILD_DIR := build
 TARGET_CPU := atmega162

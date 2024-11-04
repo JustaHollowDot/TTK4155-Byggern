@@ -107,7 +107,7 @@ void joy_stick_set_direction(struct JoyStick *joy_stick) {
 __attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
 void print_joy_stick_info(struct JoyStick *joy_stick) {
     printf("Angle: %d, distance: %d \n", (int) joy_stick->current_angle, (int) joy_stick->current_distance);
-    printf("Joy stick values: %02x : %02x \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
+    printf("Joy stick values: %d : %d \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
     printf("Button pressed: %s\n", joy_stick->button.is_pressed ? "true" : "false");
 }
 

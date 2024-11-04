@@ -2,6 +2,7 @@
 #define BYGGERN_PING_PONG_KOPI_CANCONTROLLER_H
 
 #include "./can_controller.h"
+#include "../../../../shared/can_messages.h"
 
 // Send-buffer 0
 #define MCP_TXB0SIDH 0x31
@@ -34,11 +35,13 @@
 #define MCP_RXB1D0 0x76
 
 
+/*
 struct Message {
     uint16_t id;
     uint8_t length;
     uint8_t data[8];
 };
+ */
 
 
 void can_init();

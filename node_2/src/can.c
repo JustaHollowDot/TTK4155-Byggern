@@ -3,6 +3,7 @@
 #include "sam/sam3x/source/system_sam3x.h"
 #include "can.h"
 #include <stdio.h>
+#include "../../shared/can_messages.h"
 
 void can_printmsg(CanMsg m){
     printf("CanMsg(id:%d, length:%d, data:{", m.id, m.length);
@@ -121,10 +122,27 @@ void CAN0_Handler(void){
     if(can_sr & (1 << rxMailbox)){
         // Add your message-handling code here
 
+        struct Message msg;
+        CanMsg canmsg;
+        can_rx(&canmsg);
+
+        msg.id = canmsg.id;
+        msg.length = canmsg.length;
+        for(uint8_t i = 0; i < msg.length; i++){
+            msg.data[i] = canmsg.byte[i];
+        }
+
+        // Print message
+        printf("CAN0 message arrived in mailbox %d\n\r", rxMailbox);
+        can_printmsg(canmsg);
+        printf("\n\r");
+
+        /*
         CanMsg msg;
         can_rx(&msg);
         can_printmsg(msg);
         printf("\n\r");
+         */
     } else {
         printf("CAN0 message arrived in non-used mailbox\n\r");
     }

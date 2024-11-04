@@ -15,6 +15,8 @@
 #include "peripherals/can/can.h"
 #include "menu/menu.h"
 
+#include "../../shared/can_messages.h"
+
 #define BAUD 4800
 #define MYUBRR (FOSC/16/BAUD-1)
 
@@ -22,7 +24,6 @@ int main() {
     USART_Init(MYUBRR);
     EXMEM_init();
 
-    /*
     struct Adc adc = {};
     struct JoyStick joy_stick = {};
     struct Slider slider = {};
@@ -48,7 +49,6 @@ int main() {
 
     struct Menu current_menu = main_menu;
     uint8_t current_menu_index = 0;
-    */
 
     _delay_ms(100);
     printf("\n");
@@ -58,6 +58,7 @@ int main() {
     printf("init finished: \n");
     mcp_set_mode(MODE_NORMAL);
     printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
+
 
 
     // Sender melding
@@ -82,25 +83,37 @@ int main() {
      */
 
     while(1) {
-        printf("Sending message -> \n");
-        can_send(&message);
-        _delay_ms(1000);
-
-
-
-        /*
         adc_update(&adc);
         joy_stick_update(&adc, &joy_stick);
+        print_joy_stick_info(&joy_stick);
         slider_update(&adc, &slider);
 
         menu_update(&current_menu, &joy_stick, &current_menu_index);
         menu_print_current_menu(&oled, &current_menu, current_menu_index);
         oled_display_buffer(&oled);
 
-        _delay_ms(1000);
-
         printf("\n");
         oled_clear(&oled);
-         */
+
+        struct JoyStickMessage joyStickMessage = {
+                .id = JOYSTICK_ID,
+                .length = 8,
+                .x = joy_stick.current_voltage[0],
+                .y = joy_stick.current_voltage[1],
+                .distance = joy_stick.current_distance,
+                .angle = joy_stick.current_angle,
+                .direction = joy_stick.current_direction,
+                .button_pressed = joy_stick.button.is_pressed
+        };
+
+
+        struct Test test = {
+                .joyStickMessage = joyStickMessage
+        };
+
+        printf("Sending message -> \n");
+        can_send(&test.message);
+
+        _delay_ms(10000);
     }
 }
