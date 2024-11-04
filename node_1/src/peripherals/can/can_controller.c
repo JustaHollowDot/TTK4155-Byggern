@@ -14,13 +14,21 @@ void mcp_init() {
         printf("MCP2515 er ikke i konfigurasjonsmodus etter reset. CANSTAT: %x \r\n", value);
     }
 
-    uint8_t brp = 16000000 / 2000000 - 1;
+    uint8_t brp = 4 - 1;
+    uint8_t phase_1 = 7 - 1;
+    uint8_t phase_2 = 6 - 1;
+    uint8_t prop_seg = 2 - 1;
+    uint8_t sjw = 1 - 1;
+    uint8_t blt = 1;
+    uint8_t sam = 0;
+    uint8_t sof = 0;
+    uint8_t wakfil = 0;
+
 
     // Set up CNF1, CNF2, CNF3
-    mcp_bit_modify(MCP_CNF1, 0b111111, brp);
-    mcp_bit_modify(MCP_CNF1, 0b11000000, 0);
-    mcp_bit_modify(MCP_CNF2, 0b111111, 4  + (5 << 3));
-    mcp_bit_modify(MCP_CNF3, 0b111, 0);
+    mcp_bit_modify(MCP_CNF1, 0b11111111, brp | (sjw << 3));
+    mcp_bit_modify(MCP_CNF2, 0b11111111, phase_1 | (prop_seg << 3) | sam << 6 | blt << 7);
+    mcp_bit_modify(MCP_CNF3, 0b11111111, phase_2 | wakfil << 6 | sof << 7);
 }
 
 void mcp_reset() {

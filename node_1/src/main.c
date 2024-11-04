@@ -84,7 +84,8 @@ int main() {
     while(1) {
         printf("Sending message -> \n");
         can_send(&message);
-        _delay_ms(100);
+        _delay_ms(1000);
+
 
 
         /*
