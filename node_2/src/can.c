@@ -1,5 +1,6 @@
 
-#include "sam.h"
+#include "sam/sam3x/include/sam.h"
+#include "sam/sam3x/source/system_sam3x.h"
 #include "can.h"
 #include <stdio.h>
 
@@ -21,7 +22,7 @@ void can_printmsg(CanMsg m){
 
 void can_init(CanInit init, uint8_t rxInterrupt){
     // Disable CAN
-    CAN0->CAN_MR &= ~CAN_MR_CANEN; 
+    CAN0->CAN_MR &= ~CAN_MR_CANEN;
     
     // Clear status register by reading it
     __attribute__((unused)) uint32_t ul_status = CAN0->CAN_SR;     

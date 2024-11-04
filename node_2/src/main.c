@@ -15,9 +15,8 @@ int main()
 {
     SystemInit();
 
-    // brp = F_CPU / 2000000 - 1 = 41
-    // tq = 2 * (41 + 1) / 84000000 = 0.0000005 = 0.5us
-    can_init((CanInit){.brp = F_CPU/2000000-1, .phase1 = 5, .phase2 = 2, .propag = 6}, 0);
+    can_init((CanInit){.brp = F_CPU/2000000-1, .phase1 = 5, .phase2 = 1, .propag = 6}, 0);
+
 
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
@@ -28,8 +27,33 @@ int main()
     uart_init(84000000, 4800);
     printf("Hello World\n\r");
 
+    /*
+    PMC->PMC_PCER0 = ID_PIOA;
+    PMC->PMC_PCER0 = ID_PIOB;
+    PMC->PMC_PCER0 = ID_PIOC;
+    PMC->PMC_PCER0 = ID_PIOD;
+     */
+    PMC->PMC_PCER0 = ID_CAN0;
+
+
+    // send can message
+    CanMsg send_msg = {
+        .id = 0x0,
+        .length = 8,
+        .byte = {1, 2, 3, 4, 5, 6, 7, 8}
+    };
+
     while (1)
     {
+        /*
+        // send can message
+        printf("Sending message\n\r");
+        can_tx(send_msg);
+        printf("Message sent\n\r");
+         */
+
+        // time_spinFor(msecs(3000));
+
         // receive can message
         CanMsg msg;
         uint8_t result = can_rx(&msg);
@@ -43,7 +67,7 @@ int main()
             printf("\n\r");
         }
 
-        time_spinFor(msecs(3000));
+        time_spinFor(msecs(100));
     }
     
 }

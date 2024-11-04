@@ -67,8 +67,8 @@ int main() {
             "heiiii" // Data. Maks åtte byte
             };
 
-    printf("Sending message -> \n");
-    can_send(&message); // Sender melding
+    // printf("Sending message -> \n");
+    // can_send(&message); // Sender melding
 
     // Nå er meldingen sendt. Fordi vi er i loopbackmodus blir meldingen umiddelbart "mottatt" ac MCP2515.
 
@@ -84,7 +84,8 @@ int main() {
     while(1) {
         printf("Sending message -> \n");
         can_send(&message);
-        _delay_ms(2000);
+        _delay_ms(100);
+
 
         /*
         adc_update(&adc);
