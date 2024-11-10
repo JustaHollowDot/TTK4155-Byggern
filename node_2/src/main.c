@@ -2,9 +2,15 @@
 #include <stdarg.h>
 #include "sam/sam3x/include/sam.h"
 #include "sam/sam3x/source/system_sam3x.h"
+#include "time.h"
 #include "uart.h"
 #include "can.h"
 #include "time.h"
+#include "pwm.h"
+#include "time_counter.h"
+#include "servo.h"
+#include "time_counter.h"
+
 
 #define F_CPU 84000000
 
@@ -14,27 +20,37 @@
 int main()
 {
     SystemInit();
+    uart_init(84000000, 9600);
 
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
-    // uint8_t brp = 1.25 * 10^-6 - 1;
-    uint8_t brp = 42 - 1;
-    can_init((CanInit){.brp = brp, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 1);
+    tc_init();
+
+    struct TimeCounter time_counter = {
+            .ra = 0,
+            .rb = 0,
+            .rc = 52500
+    };
+    time_counter_set_duty_cycle(&time_counter, 0.3f);
+
+    for ( ; ; ) {
+    }
+
+
+
+    time_counter_init(&time_counter);
+    
+    // time_counter_set_frequency(&time_counter, msecs(20));
+    // time_counter_set_duty_cycle(&time_counter, 0.5);
+
+
+    can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 1);
 
     // enable output on pb 13
     // PIOB->PIO_OER |= PIO_PB13;
 
     // configure_uart;
-    uart_init(84000000, 9600);
     printf("Hello World\n\r");
-
-    /*
-    PMC->PMC_PCER0 = ID_PIOA;
-    PMC->PMC_PCER0 = ID_PIOB;
-    PMC->PMC_PCER0 = ID_PIOC;
-    PMC->PMC_PCER0 = ID_PIOD;
-     */
-
 
     // send can message
     CanMsg send_msg = {
@@ -45,6 +61,7 @@ int main()
 
     while (1)
     {
+        // print TC counter value
 
         // send can message
         // printf("Sending message\n\r");

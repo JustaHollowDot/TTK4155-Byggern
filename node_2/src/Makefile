@@ -4,7 +4,7 @@ MCUTYPE = __SAM3X8E__
 # List all source files to be compiled; separate with whitespace.
 # In particular, remember to add the UART and CAN starter files.
 # Use relative file paths.
-SOURCE_FILES=$(BOOTUP) main.c uart.c can.c time.c
+SOURCE_FILES=$(BOOTUP) main.c uart.c can.c time.c time_counter.c servo.c
 #   filename1.h
 #   filename2.h
 

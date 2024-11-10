@@ -2,6 +2,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "../../shared/can_messages.h"
 
 // Struct with bit timing information
 // See `can_init` for usage example
@@ -38,10 +39,12 @@ void can_init(CanInit init, uint8_t rxInterrupt);
 
 
 // Dummy type for use with `union_cast`, see below
+/*
 typedef struct Byte8 Byte8;
 struct Byte8 {
     uint8_t bytes[8];
 };
+ */
 
 
 // CAN message data type
