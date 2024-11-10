@@ -10,9 +10,9 @@
 struct TimeCounter {
     uint8_t pin;
     uint8_t channel;
-    uint32_t ra;
-    uint32_t rb;
-    uint32_t rc;
+    uint64_t ra;
+    uint64_t rb;
+    uint64_t rc;
 };
 
 void tc_init();

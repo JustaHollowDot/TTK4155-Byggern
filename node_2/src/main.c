@@ -21,27 +21,15 @@ int main()
 {
     SystemInit();
     uart_init(84000000, 9600);
+    printf("\r\n\r\n");
+    printf("%s : %d -> Hello World\n\r", __FILE__, __LINE__);
+    printf("\r\n");
 
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
-    tc_init();
+    struct Servo servo;
+    servo_init(&servo, 0, 0, usecs(20000), usecs(900), usecs(2100));
 
-    struct TimeCounter time_counter = {
-            .ra = 0,
-            .rb = 0,
-            .rc = 52500
-    };
-    time_counter_set_duty_cycle(&time_counter, 0.3f);
-
-    for ( ; ; ) {
-    }
-
-
-
-    time_counter_init(&time_counter);
-    
-    // time_counter_set_frequency(&time_counter, msecs(20));
-    // time_counter_set_duty_cycle(&time_counter, 0.5);
 
 
     can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 1);

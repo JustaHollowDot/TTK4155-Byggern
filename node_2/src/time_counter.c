@@ -174,7 +174,7 @@ void time_counter_set_duty_cycle(struct TimeCounter *time_counter, float duty_cy
 }
 
 void time_counter_set_frequency(struct TimeCounter *time_counter, uint64_t frequency) {
-    time_counter->rc = frequency;
+    time_counter->rc = frequency / 32;
     REG_TC0_RC0 = time_counter->rc;
 
     // bound ra and rb to be in range of 0 to rc
@@ -187,4 +187,9 @@ void time_counter_set_frequency(struct TimeCounter *time_counter, uint64_t frequ
 
     REG_TC0_RA0 = time_counter->ra;
     REG_TC0_RB0 = time_counter->rb;
+}
+
+uint32_t time_counter_get_duty_cycle(struct TimeCounter *time_counter) {
+
+    return 0;
 }
