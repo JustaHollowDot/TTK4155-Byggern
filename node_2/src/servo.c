@@ -6,7 +6,7 @@ void servo_init(struct Servo *servo, uint8_t pin, uint8_t channel, uint64_t freq
             .channel = channel,
             .ra = 0,
             .rb = 0,
-            .rc = 0
+            .rc = 52500 // 20 ms
     };
 
     servo->time_counter = time_counter;
@@ -39,5 +39,5 @@ void servo_set_angle(struct Servo *servo, uint32_t angle) {
         duty_cycle = servo->min_duty_cycle;
     }
 
-    time_counter_set_duty_cycle(&servo->time_counter, (float) duty_cycle / servo->frequency);
+    time_counter_set_duty_cycle(&servo->time_counter, ((float) duty_cycle) / servo->frequency);
 }

@@ -30,7 +30,6 @@ int main()
 
     can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 1);
 
-
     struct Servo servo;
     servo_init(&servo, 0, 0, usecs(20000), usecs(900), usecs(2100));
 

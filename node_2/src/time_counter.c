@@ -190,6 +190,5 @@ void time_counter_set_frequency(struct TimeCounter *time_counter, uint64_t frequ
 }
 
 uint32_t time_counter_get_duty_cycle(struct TimeCounter *time_counter) {
-
     return 0;
 }
