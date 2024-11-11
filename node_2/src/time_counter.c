@@ -54,18 +54,41 @@ void tc_init(){
     REG_TC0_WPMR = PASSWD; //turn off write protection with password "TIM"
     TC0->TC_CHANNEL[0].TC_CMR &= ~(TC_CMR_WAVE); //enable capture mode
     // TC0->TC_CHANNEL[0].TC_CMR |= TC_CMR_TCCLKS_TIMER_CLOCK2 | TC_CMR_CPCTRG; //set mck / 32 and enable interrupt on rc compare
-    TC0->TC_CHANNEL[0].TC_CMR = (TC_CMR_ACPA_SET | TC_CMR_ACPC_CLEAR | TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK3);
+    TC0->TC_CHANNEL[0].TC_CMR =
+            TC_CMR_ACPA_SET |
+            TC_CMR_ACPC_CLEAR |
+            TC_CMR_WAVE |
+            TC_CMR_WAVSEL_UP_RC |
+            TC_CMR_TCCLKS_TIMER_CLOCK3
+            ;
     // TC0->TC_CHANNEL[0].TC_RA = 0x6c66; // TIOA sets on RA compare, which now happens at about 18.5 ms (277450)
     // TC0->TC_CHANNEL[0].TC_RB = 0x8000;
     TC0->TC_CHANNEL[0].TC_RC = 52500; // Set RC aka period to 20 ms
     TC0->TC_CHANNEL[0].TC_CCR  = TC_CCR_CLKEN | TC_CCR_SWTRG;
 
-    //REG_TC0_CCR0 = 0x00000000; //enable clock on tc0 channel 0
-    /* REG_TC0_CCR0 = 0x00000001;
-    REG_TC0_CMR0 = (TC_CMR_ACPA_SET | TC_CMR_ACPC_CLEAR | TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK3);
-    REG_TC0_RB0 = 0x8000;
-    REG_TC0_RA0 = 0x6c66; //TIOA sets on Ra compare, which now happens at abt 18.5 ms (277450)
-    REG_TC0_RC0 = 0x7530; // Set Rc aka period to 20 ms (number is 30 000) */
+
+
+
+    //START: experimental code for TC2 as pwm
+    #define CHANNEL 8
+    PIOD->PIO_PDR |= PIO_PD7;
+    PIOD->PIO_ABSR |= PIO_ABSR_P7;
+    PMC->PMC_PCER1 |= PMC_PCER1_PID35;
+    PMC->PMC_PCER0 |= 0x1u << ID_TC8;
+    TC2->TC_CHANNEL[CHANNEL].TC_CMR = TC_CMR_WAVE;
+    TC2->TC_CHANNEL[CHANNEL].TC_CMR |=
+            TC_CMR_WAVSEL_UP_RC |
+            TC_CMR_TCCLKS_TIMER_CLOCK1 |
+            TC_CMR_ACPA_SET |
+            TC_CMR_ACPC_CLEAR; //set info for tc, mainly up mode with set on compare A and clear on compare C
+    TC2->TC_CHANNEL[CHANNEL].TC_RC = 54545;
+    TC2->TC_CHANNEL[CHANNEL].TC_RA = 27000;
+    TC2->TC_CHANNEL[CHANNEL].TC_IER |= TC_IER_CPAS | TC_IER_CPCS;
+    TC2->TC_CHANNEL[CHANNEL].TC_CCR = TC_CCR_CLKEN| TC_CCR_SWTRG;
+    //END: experimental code for TC2 as pwm
+
+
+
 }
 
 

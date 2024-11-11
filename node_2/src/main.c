@@ -9,6 +9,7 @@
 #include "pwm.h"
 #include "time_counter.h"
 #include "servo.h"
+#include "IR_beam.h"
 #include "../../shared/can_messages.h"
 
 
@@ -28,43 +29,36 @@ int main()
     printf("%s : %d -> Hello World\n\r", __FILE__, __LINE__);
     printf("\r\n");
 
-    can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 1);
+    can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 0);
 
     struct Servo servo;
     servo_init(&servo, 0, 0, usecs(20000), usecs(900), usecs(2100));
 
-    // send can message
-    CanMsg send_msg = {
-        .id = 0x1,
-        .length = 8,
-        .byte = {1, 2, 3, 4, 5, 6, 7, 8}
-    };
+    struct IR_beam ir_beam;
+    IR_beam_init(&ir_beam);
 
     struct JoyStickMessage joyStickMessage;
 
+    // enable pin pb14 as digital input
+
+    uint64_t start_time = time_now();
+
     while (1)
     {
-        printf("%s : %d -> Setting servo to 0 degrees\n\r", __FILE__, __LINE__);
-        servo_set_angle(&servo, 0);
-        time_spinFor(msecs(1000));
-
-        printf("%s : %d -> Setting servo to 90 degrees\n\r", __FILE__, __LINE__);
-        servo_set_angle(&servo, 90);
-        time_spinFor(msecs(1000));
-
-        printf("%s : %d -> Setting servo to 180 degrees\n\r", __FILE__, __LINE__);
-        servo_set_angle(&servo, 180);
-        time_spinFor(msecs(1000));
-
-
-        // send can message
-        // printf("Sending message\n\r");
-        // can_tx(send_msg);
-        // printf("Message sent\n\r");
-
-        // time_spinFor(msecs(3000));
-
-        // receive can message
+        if (!(REG_PIOB_PDSR & PIO_PDSR_P14)) {
+            if (!ir_beam.beam_blocked) {
+                printf("%s: %d -> IR beam blocked\n\r", __FILE__, __LINE__);
+                ir_beam.beam_blocked = true;
+                ir_beam.beam_blocked_start_time = time_now();
+            }
+        } else {
+            if (ir_beam.beam_blocked && totalMsecs(time_now() - ir_beam.beam_blocked_start_time) > 10) {
+                printf("%s: %d -> IR beam blocked for %f seconds\n\r", __FILE__, __LINE__, totalSeconds(time_now() - ir_beam.beam_blocked_start_time));
+                printf("%s: %d -> You survived for %f seconds\n\r", __FILE__, __LINE__, totalSeconds(time_now() - start_time));
+                ir_beam.beam_blocked = false;
+                start_time = time_now();
+            }
+        }
 
         CanMsg msg;
         uint8_t result = can_rx(&msg);
@@ -83,13 +77,16 @@ int main()
             // print can message
             // can_printmsg(msg);
 
-            print_joy_stick_message(&joyStickMessage);
-            printf("\n\r");
-        } else {
-            printf("No message received\n\r");
-        }
+            // print_joy_stick_message(&joyStickMessage);
 
-        time_spinFor(msecs(1000));
+            // printf("%s: %d -> Setting servo angle to: %d\n\r", __FILE__, __LINE__, joyStickMessage.angle);
+            // set servo angle
+            if (joyStickMessage.angle > 180) {
+                joyStickMessage.angle = 180;
+            }
+
+            servo_set_angle(&servo, joyStickMessage.angle);
+        }
     }
 }
 

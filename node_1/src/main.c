@@ -118,7 +118,7 @@ int main() {
         printf("Sending message -> \n");
         can_send(&can_message.message);
 
-        _delay_ms(1000);
+        _delay_ms(300);
     }
 }
 
