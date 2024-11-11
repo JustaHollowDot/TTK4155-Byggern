@@ -4,7 +4,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define CAN_MESSAGE_LENGTH 8
+#define MESSAGE_ID 0x00
 #define JOYSTICK_ID 0x01
+#define SLIDER_ID 0x02
 
 
 struct JoyStickMessage {
@@ -50,7 +53,7 @@ struct Message {
     };
 };
 
-struct Test {
+struct CanMessage {
     union {
         struct Message message;
         struct JoyStickMessage joyStickMessage;
@@ -58,6 +61,13 @@ struct Test {
     };
 };
 
-// struct JoyStickMessage create_joy_stick_message(uint8_t x, uint8_t y, uint16_t distance, uint16_t angle, uint8_t direction, bool button_pressed);
+struct JoyStickMessage create_joy_stick_message(uint8_t x, uint8_t y, uint16_t distance, uint16_t angle, uint8_t direction, bool button_pressed);
+void print_joy_stick_message(struct JoyStickMessage *message);
+
+struct SliderMessage create_slider_message(uint8_t x, uint8_t y);
+void print_slider_message(struct SliderMessage *message);
+
+struct Message create_message(uint16_t id, uint8_t length, uint8_t *data);
+void print_message(struct Message *message);
 
 #endif //BYGGERN_PING_PONG_KOPI_CAN_MESSAGES_H

@@ -1,4 +1,5 @@
 #include "can_messages.h"
+#include "stdio.h"
 
 struct JoyStickMessage create_joy_stick_message(uint8_t x, uint8_t y, uint16_t distance, uint16_t angle, uint8_t direction, bool button_pressed) {
     struct JoyStickMessage message = {
@@ -14,3 +15,4 @@ struct JoyStickMessage create_joy_stick_message(uint8_t x, uint8_t y, uint16_t d
 
     return message;
 }
+
