@@ -2,8 +2,6 @@
 #include "menu.h"
 
 void menu_update(struct Menu *menu, struct JoyStick *joyStick, uint8_t *current_menu_index) {
-    printf("direction: %d\n", joyStick->current_direction);
-
     if (joyStick->current_direction == UP) {
         uint8_t tmp = *current_menu_index;
         if (tmp > 0) {
@@ -19,8 +17,6 @@ void menu_update(struct Menu *menu, struct JoyStick *joyStick, uint8_t *current_
 
         *current_menu_index = tmp;
     }
-
-    printf("current_index: %d \n", (int) *current_menu_index);
 }
 
 struct Menu *menu_add_sub_menu(struct Menu *parent_menu, char *text, void (*function)()) {

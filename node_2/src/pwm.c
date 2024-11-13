@@ -14,7 +14,7 @@ void pwm_test_2() {
     // Select Instance=PWM; Signal=PWML2 (channel 2); I/O Line=PA20 (P20, Arduino pin 43, see pinout diagram) ; Peripheral=B
     PMC->PMC_PCER1 |= PMC_PCER1_PID36;                    // PWM power on , see datasheet page 38
 
-    PWM->PWM_DIS = PWM_DIS_CHID0;         // Disable PWM channel 2
+    PWM->PWM_DIS = PWM_DIS_CHID0;         // Disable PWM channel 0
 
     // Select Instance=PWM; Signal=PWML2 (channel 2); I/O Line=PA20 (P20, Arduino pin 43, see pinout diagram) ; Peripheral=B
     PMC->PMC_PCER0 |= PMC_PCER0_PID12;                    // PIOA power on
@@ -24,13 +24,13 @@ void pwm_test_2() {
     PIOB->PIO_ABSR |= PIO_ABSR_P12;                       // Set PWM pin perhipheral type B , datasheet page 974
 
     // Set registers for PWM channel 2
-    PWM->PWM_CLK = PWM_CLK_PREA(0) | PWM_CLK_DIVA(1);    // Set the PWM clock rate to 84MHz (84MHz/1). Adjust DIVA for the resolution you are looking for
+    PWM->PWM_CLK = PWM_CLK_PREA(0) | PWM_CLK_DIVA(42);    // Set the PWM clock rate to 84MHz (84MHz/42). Adjust DIVA for the resolution you are looking for
 
     PWM->PWM_CH_NUM[0].PWM_CMR = PWM_CMR_CPRE_CLKA;     // The period is left aligned, clock source as CLKA on channel 2
 
-    PWM->PWM_CH_NUM[0].PWM_CPRD = 1024;                  // Channel 2 : Set the PWM frequency (84MHz/1)/PWM_CPRD = 100KHz ;
+    PWM->PWM_CH_NUM[0].PWM_CPRD = 4000;                  // Channel 2 : Set the PWM frequency (84MHz/42)/PWM_CPRD = 100KHz ;
 
-    PWM->PWM_CH_NUM[0].PWM_CDTY = 300;                  // Channel 2: Set the PWM duty cycle to x%= (CDTY/ CPRD)  * 100 % = 50%;
+    PWM->PWM_CH_NUM[0].PWM_CDTY = 0;                  // Channel 2: Set the PWM duty cycle to x%= (CDTY/ CPRD)  * 100 % = 50%;
 
     PWM->PWM_ENA = PWM_ENA_CHID0;
 
@@ -119,6 +119,3 @@ void pwm_set_duty_cycle(struct Pwm_config *pwm_config, uint32_t duty_cycle) {
     REG_PWM_SCUC |= PWM_SCUC_UPDULOCK;
 }
 
-uint32_t pwm_get_duty_cycle(struct Pwm_config *pwm_config) {
-    return 0;
-}

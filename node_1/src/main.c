@@ -17,7 +17,7 @@
 
 #include "../../shared/can_messages.h"
 
-#define BAUD 4800
+#define BAUD 9600
 #define MYUBRR (FOSC/16/BAUD-1)
 
 int main() {
@@ -48,6 +48,7 @@ int main() {
     main_menu.text = "Main menu";
 
     menu_add_sub_menu(&main_menu, "Sub menu", NULL);
+    menu_add_sub_menu(&main_menu, "Sub menu 2", NULL);
 
     struct Menu current_menu = main_menu;
     uint8_t current_menu_index = 0;
@@ -60,8 +61,6 @@ int main() {
     printf("init finished: \n");
     mcp_set_mode(MODE_NORMAL);
     printf("mode: %x\r\n", mcp_read(MCP_CANSTAT));
-
-
 
     // Sender melding
     struct Message message = {
@@ -84,18 +83,16 @@ int main() {
     printf("Melding: %s \r\n\r\n", receive.data);
      */
 
+    uint32_t i = 0;
     while(1) {
         adc_update(&adc);
         joy_stick_update(&adc, &joy_stick);
-        print_joy_stick_info(&joy_stick);
         slider_update(&adc, &slider);
 
         menu_update(&current_menu, &joy_stick, &current_menu_index);
         menu_print_current_menu(&oled, &current_menu, current_menu_index);
 
         oled_display_buffer(&oled);
-
-        printf("\n");
         oled_clear(&oled);
 
         struct JoyStickMessage joyStickMessage = {
@@ -114,12 +111,14 @@ int main() {
                 .joyStickMessage = joyStickMessage
         };
 
-        // print_joy_stick_message(&can_message.joyStickMessage);
+        i++;
+        if (i % 100 == 0) {
+            printf("%s: %d -> Sent 100 messages\n\r", __FILE__, __LINE__);
+            printf("%s: %d -> Button pressed: %s\n\r", __FILE__, __LINE__, joy_stick.button.is_pressed ? "true" : "false");
+        }
 
-        printf("Sending message -> \n");
         can_send(&can_message.message);
-
-        _delay_ms(300);
+        _delay_ms(10);
     }
 }
 
