@@ -92,6 +92,7 @@ int main() {
 
         menu_update(&current_menu, &joy_stick, &current_menu_index);
         menu_print_current_menu(&oled, &current_menu, current_menu_index);
+
         oled_display_buffer(&oled);
 
         printf("\n");

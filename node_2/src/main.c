@@ -23,6 +23,12 @@ int main()
     SystemInit();
     WDT->WDT_MR = WDT_MR_WDDIS; //Disable Watchdog Timer
 
+    PMC->PMC_PCER0 |= (1 << ID_PIOA);
+    PMC->PMC_PCER0 |= (1 << ID_PIOB);
+    PMC->PMC_PCER0 |= (1 << ID_PIOC);
+    PMC->PMC_PCER0 |= (1 << ID_PIOD);
+
+
     uart_init(84000000, 9600);
 
     printf("\r\n\r\n");
@@ -31,8 +37,53 @@ int main()
 
     can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 0);
 
+    pwm_test_2();
+
+
+    for ( ; ; ) {}
+    
+    struct Pwm_config pwm_config = {
+            .pin = 0,
+            .channel = 0,
+            .frequency = 50,
+            .duty_cycle = 1500
+    };
+
+    pwm_init(&pwm_config);
+    pwm_set_duty_cycle(&pwm_config, 1500);
+
+    for ( ; ; ) {}
+
+    struct TimeCounter time_counter = {
+            .pin = 0,
+            .channel = 0,
+            .ra = 10000,
+            .rb = 10000,
+            .rc = 52500 // 20 ms
+    };
+    // time_counter_init(&time_counter);
+    tc0_init();
+    printf("%s: %d -> Reading TC0 -> RA0: %lu - RB0: %lu - RC0: %lu\n\r", __FILE__, __LINE__, TC0->TC_CHANNEL[0].TC_RA, TC0->TC_CHANNEL[0].TC_RB, TC0->TC_CHANNEL[0].TC_RC);
+
+    time_counter_set_frequency(&time_counter, usecs(20000));
+    time_counter_set_duty_cycle_ra(&time_counter, 0.3);
+    time_counter_set_duty_cycle_rb(&time_counter, 0.7);
+    printf("%s: %d -> Reading TC0 -> RA0: %lu - RB0: %lu - RC0: %lu\n\r", __FILE__, __LINE__, TC0->TC_CHANNEL[0].TC_RA, TC0->TC_CHANNEL[0].TC_RB, TC0->TC_CHANNEL[0].TC_RC);
+
+    time_spinFor(seconds(3));
+    printf("%s: %d -> Setting frequency to 50 Hz\n\r", __FILE__, __LINE__);
+    TC0->TC_CHANNEL[0].TC_CV;
+
+
     struct Servo servo;
     servo_init(&servo, 0, 0, usecs(20000), usecs(900), usecs(2100));
+    servo_set_angle(&servo, 90);
+    printf("%s: %d -> Reading TC0 -> RA0: %lu - RB0: %lu - RC0: %lu\n\r", __FILE__, __LINE__, TC0->TC_CHANNEL[0].TC_RA, TC0->TC_CHANNEL[0].TC_RB, TC0->TC_CHANNEL[0].TC_RC);
+
+    tc2_init();
+
+
+
 
     struct IR_beam ir_beam;
     IR_beam_init(&ir_beam);
@@ -43,8 +94,7 @@ int main()
 
     uint64_t start_time = time_now();
 
-    while (1)
-    {
+    while (1) {
         if (!(REG_PIOB_PDSR & PIO_PDSR_P14)) {
             if (!ir_beam.beam_blocked) {
                 printf("%s: %d -> IR beam blocked\n\r", __FILE__, __LINE__);
@@ -54,11 +104,17 @@ int main()
         } else {
             if (ir_beam.beam_blocked && totalMsecs(time_now() - ir_beam.beam_blocked_start_time) > 10) {
                 printf("%s: %d -> IR beam blocked for %f seconds\n\r", __FILE__, __LINE__, totalSeconds(time_now() - ir_beam.beam_blocked_start_time));
-                printf("%s: %d -> You survived for %f seconds\n\r", __FILE__, __LINE__, totalSeconds(time_now() - start_time));
+                printf("%s: %d -> You survived for %f seconds\n\r", __FILE__, __LINE__, totalSeconds(time_now() - start_time) - totalSeconds(time_now() - ir_beam.beam_blocked_start_time));
                 ir_beam.beam_blocked = false;
                 start_time = time_now();
             }
         }
+
+        printf("%s: %d -> Reading TC2 -> CV0: %lu - CV1: %lu\n\r", __FILE__, __LINE__, TC2->TC_CHANNEL[0].TC_CV, TC2->TC_CHANNEL[1].TC_CV);
+        // printf("%s: %d -> Reading TC0 -> RA0: %lu - RB0: %lu - RC0: %lu\n\r", __FILE__, __LINE__, TC0->TC_CHANNEL[0].TC_RA, TC0->TC_CHANNEL[0].TC_RB, TC0->TC_CHANNEL[0].TC_RC);
+
+
+
 
         CanMsg msg;
         uint8_t result = can_rx(&msg);
@@ -86,7 +142,10 @@ int main()
             }
 
             servo_set_angle(&servo, joyStickMessage.angle);
+
         }
+        
+        time_spinFor(seconds(1));
     }
 }
 

@@ -36,27 +36,44 @@ void tc_init(){
 
 } */
 
-void tc_init(){
-    //first we enable thje peripheral clock for TC0
+void tc_init() {
+    PMC->PMC_WPMR = PASSWD_PMC; //disable write protection
+    PIOB->PIO_WPMR = PASSWD_PIO; //disable write protection
+    REG_TC0_WPMR = PASSWD; //turn off write protection with password "TIM"
+
+    PMC->PMC_SCER = 0x00000700; //enable all programmable clocks
+
+    PMC->PMC_PCER0 |= (1 << ID_TC0);
+    PMC->PMC_PCER0 |= (1 << ID_TC1);
+    PMC->PMC_PCER0 |= (1 << ID_TC2);
+    PMC->PMC_PCER0 |= (1 << ID_TC3);
+    PMC->PMC_PCER0 |= (1 << ID_TC4);
+    PMC->PMC_PCER1 |= (1 << (ID_TC5 - 32));
+    PMC->PMC_PCER1 |= (1 << (ID_TC6 - 32));
+    PMC->PMC_PCER1 |= (1 << (ID_TC7 - 32));
+    PMC->PMC_PCER1 |= (1 << (ID_TC8 - 32));
+}
+
+void tc0_init() {
+    tc_init();
     PMC->PMC_WPMR = PASSWD_PMC; //disable write protection
     PMC->PMC_SCER = 0x00000700; //enable all programmable clocks
     PMC->PMC_PCER0 |= PMC_PCER0_PID12; //enable clock on port B
-    PMC->PMC_PCER0 |= PMC_PCER0_PID27; // enable clock on TC0
 
-    //now we set this waveform out on pin 25 on port B
-    PIOB->PIO_WPMR = PASSWD_PIO; //disable write protection
-    //PIOB->PIO_OER |= PIO_PB25;
     PIOB->PIO_PDR |= PIO_PB25;
-    //PIOB->PIO_PER &= ~PIO_PB25; //disable PIO control on PB25 aka enable peripheral control
     PIOB->PIO_ABSR |=  PIO_PB25; //enable peripheral B (tioa0) on pin 25 port B
 
+    PIOB->PIO_PDR |= PIO_PB27; //disable PIO control on PB25 aka enable peripheral control
+    PIOB->PIO_ABSR |=  PIO_PB27; //enable peripheral B (tiob0) on pin 27 port B
 
-    REG_TC0_WPMR = PASSWD; //turn off write protection with password "TIM"
     TC0->TC_CHANNEL[0].TC_CMR &= ~(TC_CMR_WAVE); //enable capture mode
     // TC0->TC_CHANNEL[0].TC_CMR |= TC_CMR_TCCLKS_TIMER_CLOCK2 | TC_CMR_CPCTRG; //set mck / 32 and enable interrupt on rc compare
     TC0->TC_CHANNEL[0].TC_CMR =
             TC_CMR_ACPA_SET |
+            TC_CMR_BCPB_SET |
             TC_CMR_ACPC_CLEAR |
+            TC_CMR_BCPC_CLEAR |
+            TC_CMR_EEVT_XC1 |
             TC_CMR_WAVE |
             TC_CMR_WAVSEL_UP_RC |
             TC_CMR_TCCLKS_TIMER_CLOCK3
@@ -64,31 +81,49 @@ void tc_init(){
     // TC0->TC_CHANNEL[0].TC_RA = 0x6c66; // TIOA sets on RA compare, which now happens at about 18.5 ms (277450)
     // TC0->TC_CHANNEL[0].TC_RB = 0x8000;
     TC0->TC_CHANNEL[0].TC_RC = 52500; // Set RC aka period to 20 ms
+    TC0->TC_CHANNEL[0].TC_RB = 20000;
+    TC0->TC_CHANNEL[0].TC_RA = 10000;
+
     TC0->TC_CHANNEL[0].TC_CCR  = TC_CCR_CLKEN | TC_CCR_SWTRG;
+}
+
+void tc2_init() {
+    tc_init();
+
+    PMC->PMC_WPMR = PASSWD_PMC; //disable write protection
+    PMC->PMC_SCER = 0x00000700; //enable all programmable clocks
+
+    PIOC->PIO_PDR |= PIO_PC25;
+    PIOC->PIO_ABSR |= PIO_PC25;
+
+    PIOC->PIO_PDR |= PIO_PC26;
+    PIOC->PIO_ABSR |= PIO_PC26;
 
 
-
-
-    //START: experimental code for TC2 as pwm
-    #define CHANNEL 8
-    PIOD->PIO_PDR |= PIO_PD7;
-    PIOD->PIO_ABSR |= PIO_ABSR_P7;
-    PMC->PMC_PCER1 |= PMC_PCER1_PID35;
-    PMC->PMC_PCER0 |= 0x1u << ID_TC8;
-    TC2->TC_CHANNEL[CHANNEL].TC_CMR = TC_CMR_WAVE;
-    TC2->TC_CHANNEL[CHANNEL].TC_CMR |=
+    TC2->TC_CHANNEL[0].TC_CMR &= ~(TC_CMR_WAVE); //enable capture mode
+    TC2->TC_CHANNEL[0].TC_CMR |=
+            TC_CMR_TCCLKS_XC0 |
             TC_CMR_WAVSEL_UP_RC |
             TC_CMR_TCCLKS_TIMER_CLOCK1 |
-            TC_CMR_ACPA_SET |
-            TC_CMR_ACPC_CLEAR; //set info for tc, mainly up mode with set on compare A and clear on compare C
-    TC2->TC_CHANNEL[CHANNEL].TC_RC = 54545;
-    TC2->TC_CHANNEL[CHANNEL].TC_RA = 27000;
-    TC2->TC_CHANNEL[CHANNEL].TC_IER |= TC_IER_CPAS | TC_IER_CPCS;
-    TC2->TC_CHANNEL[CHANNEL].TC_CCR = TC_CCR_CLKEN| TC_CCR_SWTRG;
-    //END: experimental code for TC2 as pwm
+            TC_CMR_ETRGEDG_RISING |
+            TC_CMR_ABETRG;
 
+    TC2->TC_CHANNEL[1].TC_CMR &= ~(TC_CMR_WAVE); //enable capture mode
+    TC2->TC_CHANNEL[1].TC_CMR |=
+            TC_CMR_TCCLKS_XC0 |
+            TC_CMR_WAVSEL_UP_RC |
+            TC_CMR_TCCLKS_TIMER_CLOCK1 |
+            TC_CMR_ETRGEDG_RISING |
+            TC_CMR_ABETRG;
 
+    TC2->TC_BMR |=
+            TC_BMR_QDEN |
+            TC_BMR_POSEN |
+            TC_BMR_EDGPHA;
 
+    TC2->TC_CHANNEL[0].TC_CCR = TC_CCR_CLKEN| TC_CCR_SWTRG;
+    TC2->TC_CHANNEL[1].TC_CCR = TC_CCR_CLKEN| TC_CCR_SWTRG;
+    TC2->TC_CHANNEL[2].TC_CCR = TC_CCR_CLKEN| TC_CCR_SWTRG;
 }
 
 
@@ -113,6 +148,7 @@ void tc_init() {
     TC0->TC_CHANNEL[0].TC_RB = 0x8000;
     TC0->TC_CHANNEL[0].TC_RC = 0x7530; // Set RC aka period to 20 ms (number is 30,000)
 }*/
+
 
 
 void time_counter_init(struct TimeCounter *time_counter) {
@@ -162,6 +198,9 @@ void time_counter_init(struct TimeCounter *time_counter) {
     PIOB->PIO_PER &= ~PIO_PB25; //disable PIO control on PB25 aka enable peripheral control
     PIOB->PIO_ABSR |=  PIO_PB25; //enable peripheral B (tioa0) on pin 25 port B
 
+    PIOB->PIO_PER &= ~PIO_PB27; //disable PIO control on PB25 aka enable peripheral control
+    PIOB->PIO_ABSR |=  PIO_PB27; //enable peripheral B (tioa0) on pin 25 port B
+
 
     REG_TC0_WPMR = PASSWD; //turn off write protection with password "TIM"
     REG_TC0_CCR0 = 0x00000000; //enable clock on tc0 channel 0
@@ -172,11 +211,13 @@ void time_counter_init(struct TimeCounter *time_counter) {
             TC_CMR_TCCLKS_TIMER_CLOCK1 |
             TC_CMR_BURST_NONE |
             TC_CMR_EEVTEDG_NONE |
-            TC_CMR_EEVT_XC0 |
+            TC_CMR_EEVT_XC1 |
             TC_CMR_WAVSEL_UP_RC |
             TC_CMR_WAVE |
             TC_CMR_ACPA_SET |
+            TC_CMR_BCPB_CLEAR |
             TC_CMR_ACPC_CLEAR |
+            TC_CMR_BCPC_CLEAR |
             TC_CMR_ASWTRG_NONE |
             TC_CMR_AEEVT_NONE |
             TC_CMR_BCPB_NONE |
@@ -186,14 +227,6 @@ void time_counter_init(struct TimeCounter *time_counter) {
     REG_TC0_RB0 = 0x8000;
     REG_TC0_RA0 = 0x6c66; //TIOA sets on Ra compare, which now happens at abt 18.5 ms (277450)
     REG_TC0_RC0 = 0x7530; // Set Rc aka period to 20 ms (number is 30 000)
-}
-
-void time_counter_set_duty_cycle(struct TimeCounter *time_counter, float duty_cycle) {
-    time_counter->ra = time_counter->rc - (time_counter->rc * duty_cycle);
-    time_counter->rb = time_counter->ra;
-
-    REG_TC0_RA0 = time_counter->ra;
-    REG_TC0_RB0 = time_counter->rb;
 }
 
 void time_counter_set_frequency(struct TimeCounter *time_counter, uint64_t frequency) {
@@ -211,6 +244,17 @@ void time_counter_set_frequency(struct TimeCounter *time_counter, uint64_t frequ
     REG_TC0_RA0 = time_counter->ra;
     REG_TC0_RB0 = time_counter->rb;
 }
+
+void time_counter_set_duty_cycle_ra(struct TimeCounter *time_counter, float duty_cycle) {
+    time_counter->ra = time_counter->rc - (time_counter->rc * duty_cycle);
+    REG_TC0_RA0 = time_counter->ra;
+}
+
+void time_counter_set_duty_cycle_rb(struct TimeCounter *time_counter, float duty_cycle) {
+    time_counter->rb = time_counter->rc - (time_counter->rc * duty_cycle);
+    TC0->TC_CHANNEL[0].TC_RB = time_counter->rb;
+}
+
 
 uint32_t time_counter_get_duty_cycle(struct TimeCounter *time_counter) {
     return 0;

@@ -12,6 +12,8 @@ struct Pwm_config {
     uint32_t duty_cycle;
 };
 
+void pwm_test_2();
+void pwm_test_init();
 void pwm_init(struct Pwm_config *pwm_config);
 void pwm_set_duty_cycle(struct Pwm_config *pwm_config, uint32_t duty_cycle);
 uint32_t pwm_get_duty_cycle(struct Pwm_config *pwm_config);

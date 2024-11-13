@@ -14,10 +14,11 @@ void servo_init(struct Servo *servo, uint8_t pin, uint8_t channel, uint64_t freq
     servo->max_duty_cycle = max_duty_cycle;
     servo->frequency = frequency;
 
-    tc_init();
+    tc0_init();
     time_counter_set_frequency(&time_counter, usecs(20000));
     float test_val = ((float) min_duty_cycle) / frequency;
-    time_counter_set_duty_cycle(&time_counter, test_val);
+    time_counter_set_duty_cycle_ra(&time_counter, test_val);
+    time_counter_set_duty_cycle_rb(&time_counter, 0.5);
 }
 
 void servo_set_angle(struct Servo *servo, uint32_t angle) {
@@ -39,5 +40,5 @@ void servo_set_angle(struct Servo *servo, uint32_t angle) {
         duty_cycle = servo->min_duty_cycle;
     }
 
-    time_counter_set_duty_cycle(&servo->time_counter, ((float) duty_cycle) / servo->frequency);
+    time_counter_set_duty_cycle_ra(&servo->time_counter, ((float) duty_cycle) / servo->frequency);
 }
