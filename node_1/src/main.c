@@ -69,20 +69,6 @@ int main() {
             "heiiii" // Data. Maks åtte byte
             };
 
-    // printf("Sending message -> \n");
-    // can_send(&message); // Sender melding
-
-    // Nå er meldingen sendt. Fordi vi er i loopbackmodus blir meldingen umiddelbart "mottatt" ac MCP2515.
-
-    // Mottar melding
-    /*
-    struct Message receive = can_receive();
-    printf("Heisann sveisann, vi har fått ei melding.\r\n");
-    printf("Id: %d \r\n", receive.id);
-    printf("Lengde: %d \r\n", receive.length);
-    printf("Melding: %s \r\n\r\n", receive.data);
-     */
-
     uint32_t i = 0;
     while(1) {
         adc_update(&adc);
@@ -121,17 +107,3 @@ int main() {
         _delay_ms(10);
     }
 }
-
-/*
-void print_joy_stick_message(struct JoyStickMessage *message) {
-    printf("%s: %d -> Joystick message: \n\r", __FILE__, __LINE__);
-    printf("%s: %d -> \tID: %d \n\r", __FILE__, __LINE__, message->id);
-    printf("%s: %d -> \tLength: %d \n\r", __FILE__, __LINE__, message->length);
-    printf("%s: %d -> \tX: %d \n\r", __FILE__, __LINE__, message->x);
-    printf("%s: %d -> \tY: %d \n\r", __FILE__, __LINE__, message->y);
-    printf("%s: %d -> \tDistance: %d \n\r", __FILE__, __LINE__, message->distance);
-    printf("%s: %d -> \tAngle: %d \n\r", __FILE__, __LINE__, message->angle);
-    printf("%s: %d -> \tDirection: %d \n\r", __FILE__, __LINE__, message->direction);
-    printf("%s: %d -> \tButton pressed: %s \n\r", __FILE__, __LINE__, message->button_pressed ? "true" : "false");
-}
-*/

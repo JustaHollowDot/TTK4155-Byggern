@@ -56,25 +56,6 @@ void joy_stick_set_angle(struct JoyStick *joy_stick) {
     float delta_x = joy_stick->current_voltage[0] - joy_stick->center_voltage[0];
     float delta_y = joy_stick->current_voltage[1] - joy_stick->center_voltage[1];
 
-    /*
-    // scale deltas based on the highest recorded value
-    if (delta_x > 0) {
-        float max_delta = (float) joy_stick->max_voltages[0] - joy_stick->center_voltage[0];
-        delta_x = delta_x / max_delta;
-    } else {
-        float max_delta = (float) joy_stick->min_voltages[1] - joy_stick->center_voltage[1];
-        delta_x = delta_x / max_delta;
-    }
-
-    if (delta_y > 0) {
-        float max_delta = (float) joy_stick->max_voltages[1] - joy_stick->center_voltage[1];
-        delta_y = delta_y / max_delta;
-    } else {
-        float max_delta = (float) joy_stick->min_voltages[1] - joy_stick->center_voltage[1];
-        delta_y = delta_y / max_delta;
-    }
-     */
-
     joy_stick->current_angle = (uint16_t) (atan2f(delta_y, delta_x) * 57) + 180;
 }
 
@@ -104,10 +85,3 @@ void joy_stick_set_direction(struct JoyStick *joy_stick) {
     }
 }
 
-/*
-__attribute__((unused)) // Only used for debugging, attribute removes warning on intended usage
-void print_joy_stick_info(struct JoyStick *joy_stick) {
-    printf("Angle: %d, distance: %d \n", (int) joy_stick->current_angle, (int) joy_stick->current_distance);
-    printf("Joy stick values: %d : %d \n", joy_stick->current_voltage[0], joy_stick->current_voltage[1]);
-    printf("Button pressed: %s\n", joy_stick->button.is_pressed ? "true" : "false");
-} */

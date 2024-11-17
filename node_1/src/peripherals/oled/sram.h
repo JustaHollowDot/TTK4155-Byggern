@@ -8,6 +8,5 @@
 #define SRAM_START 0x1800
 
 void EXMEM_init();
-void SRAM_test(void);
 
 #endif
