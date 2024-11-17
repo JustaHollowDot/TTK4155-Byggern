@@ -15,9 +15,6 @@
 
 #define F_CPU 84000000
 
-//Import UART from Node 2 starter code, then edit include path accordingly. Also, remember to update the makefile
-//#include "uart.h"
-
 uint32_t get_position() {
     return TC2->TC_CHANNEL[0].TC_CV;
 }
@@ -48,28 +45,7 @@ int main() {
     printf("%s : %d -> Hello World\n\r", __FILE__, __LINE__);
     printf("\r\n");
 
-
-    // printf("%s : %d -> Spin for 10 seconds\n\r", __FILE__, __LINE__);
-    // time_spinFor(seconds(10));
-    // printf("%s : %d -> Done spinning\n\r", __FILE__, __LINE__);
-
     can_init((CanInit){.brp = 42 - 1, .phase1 = 7-1, .phase2 = 6-1, .propag = 2-1}, 0);
-
-
-    /*
-    struct TimeCounter time_counter = {
-            .pin = 0,
-            .channel = 0,
-            .ra = 10000,
-            .rb = 10000,
-            .rc = 52500 // 20 ms
-    };
-    tc0_init();
-
-    time_counter_set_frequency(&time_counter, usecs(20000));
-    time_counter_set_duty_cycle_ra(&time_counter, 0.3);
-    time_counter_set_duty_cycle_rb(&time_counter, 0.7);
-    */
 
     struct Servo servo;
     servo_init(&servo, 0, 0, usecs(20000), usecs(900), usecs(2100));
@@ -297,46 +273,6 @@ int main() {
         
         time_spinFor(msecs(10));
 
-        /*
-
-        if (current_position < target_position - 10) {
-            if (i % 10 == 0) {
-                printf("%s: %d -> Moving motor right\n\r", __FILE__, __LINE__);
-            }
-
-            direction_left = false;
-            if (direction_left) {
-                PIOC->PIO_SODR |= PIO_PC23;
-            } else {
-                PIOC->PIO_CODR |= PIO_PC23;
-            }
-
-            pwm_set_duty_cycle(&pwm_config, 2000);
-        } else if (current_position > target_position + 10) {
-            if (i % 10 == 0) {
-                printf("%s: %d -> Moving motor left\n\r", __FILE__, __LINE__);
-            }
-            
-            direction_left = true;
-            if (direction_left) {
-                PIOC->PIO_SODR |= PIO_PC23;
-            } else {
-                PIOC->PIO_CODR |= PIO_PC23;
-            }
-
-            pwm_set_duty_cycle(&pwm_config, 2000);
-        } else {
-            pwm_set_duty_cycle(&pwm_config, 4000);
-        }
-
-        int32_t temp_position = get_position();
-        current_position = temp_position - min_position;
-
-        if (temp_position < min_position) {
-            min_position = temp_position;
-            max_position = min_position + 4400;
-        }
-         */
     }
 }
 

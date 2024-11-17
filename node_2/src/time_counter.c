@@ -127,30 +127,6 @@ void tc2_init() {
 }
 
 
-/*
-void tc_init() {
-    // First, we enable the peripheral clock for TC0
-    PMC->PMC_WPMR = PASSWD_PMC; // Disable write protection
-    PMC->PMC_SCER = 0x00000700; // Enable all programmable clocks
-    PMC->PMC_PCER0 |= PMC_PCER0_PID12; // Enable clock on port B
-    PMC->PMC_PCER0 |= PMC_PCER0_PID27; // Enable clock on TC0
-
-    // Now we set this waveform out on pin 25 on port B
-    PIOB->PIO_WPMR = PASSWD_PIO; // Disable write protection
-    PIOB->PIO_PDR |= PIO_PB15;
-    PIOB->PIO_PER &= ~PIO_PB25; // Disable PIO control on PB25 aka enable peripheral control
-    PIOB->PIO_ABSR |= PIO_PB25; // Enable peripheral B (TIOA0) on pin 25 port B
-
-    TC0->TC_CHANNEL[0].TC_WPMR = PASSWD; // Turn off write protection with password "TIM"
-    TC0->TC_CHANNEL[0].TC_CCR = TC_CCR_CLKEN; // Enable clock on TC0 channel 0
-    TC0->TC_CHANNEL[0].TC_CMR = (TC_CMR_ACPA_SET | TC_CMR_ACPC_CLEAR | TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC | TC_CMR_TCCLKS_TIMER_CLOCK3);
-    TC0->TC_CHANNEL[0].TC_RA = 0x6c66; // TIOA sets on RA compare, which now happens at about 18.5 ms (277450)
-    TC0->TC_CHANNEL[0].TC_RB = 0x8000;
-    TC0->TC_CHANNEL[0].TC_RC = 0x7530; // Set RC aka period to 20 ms (number is 30,000)
-}*/
-
-
-
 void time_counter_init(struct TimeCounter *time_counter) {
     /*
     // set mode to 0
